@@ -79,8 +79,10 @@ public nonisolated enum EELSThickness {
         // One pixel's spectrum at a time, as Doubles (a float32 cube is widened a row at a time, never as a whole: SpectroKit#94).
         var scratch = [Double](repeating: 0, count: nch)
         let counts = image.storedCounts
+        // The zero-loss spectrum image, when given, is read a pixel at a time the same way (SpectroKit#97).
+        var zeroScratch = [Double](repeating: 0, count: max(zeroLoss?.channels ?? 0, 1))
         try scratch.withUnsafeMutableBufferPointer { rowBuffer in
-            try (zeroLoss?.storedCounts ?? EELSCounts([Double]())).withDoubles { zbuf in
+            try zeroScratch.withUnsafeMutableBufferPointer { zbuf in
                 for p in 0..<np {
                     if p % block == 0 {
                         try SpectroCancellation.check(cancelled)
@@ -100,7 +102,8 @@ public nonisolated enum EELSThickness {
                     var missing: ThicknessUnavailable?
                     switch route {
                     case .zeroLossSpectrum:
-                        i0 = NumpySum.pairwise(zbuf.baseAddress! + p * zeroLoss!.channels, count: zeroLoss!.channels)
+                        zeroLoss!.storedCounts.copy(start: p * zeroLoss!.channels, count: zeroLoss!.channels, into: zbuf.baseAddress!)
+                        i0 = NumpySum.pairwise(zbuf.baseAddress!, count: zeroLoss!.channels)
                     case .fixed(let energy, let stop):
                         thetaEV = energy; thetaChannel = stop
                         i0 = NumpySum.pairwise(row, count: stop)

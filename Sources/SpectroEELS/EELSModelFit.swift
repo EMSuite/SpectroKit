@@ -271,11 +271,11 @@ public enum EELSModelFit {
         let rows = setup.start ..< (n - 1)                               // the last stage of smart_fit: [start, axis end), the end channel excluded
         let slots = EELSSlots<PixelFit?>(count: np, initial: nil)
         let logE = rows.map { log(basis.energies[$0]) }
-        try coreLoss.storedCounts.withDoubles { counts in
-            nonisolated(unsafe) let input = counts
+        let counts = coreLoss.storedCounts                              // read a pixel at a time, never widened whole (SpectroKit#97)
+        do {
             try EELSParallel.forEachPixel(count: np, cancelled: cancelled, progress: progress) { p in
                 if let mask, !mask[p] { slots.set(p, PixelFit(failure: .masked)); return }
-                let y = Array(UnsafeBufferPointer(start: input.baseAddress! + p * n + rows.lowerBound, count: rows.count))
+                let y = counts.row(start: p * n + rows.lowerBound, count: rows.count)
                 var columns = [[Double]](repeating: [], count: m)
                 for g in 0 ..< m { columns[g] = basis.column(group: g, pixel: p, rows: rows) }
                 slots.set(p, solve(y: y, logE: logE, scale: basis.scale, edgeColumns: columns, range: options.exponentRange))
@@ -314,11 +314,11 @@ public enum EELSModelFit {
         let rows = setup.start ..< setup.preEdgeEnd
         let logE = rows.map { log(setup.axis.energy(ofChannel: $0)) }
         let slots = EELSSlots<PowerLawParameters?>(count: np, initial: nil)
-        try coreLoss.storedCounts.withDoubles { counts in
-            nonisolated(unsafe) let input = counts
+        let counts = coreLoss.storedCounts
+        do {
             try EELSParallel.forEachPixel(count: np, cancelled: cancelled, progress: progress) { p in
                 if let mask, !mask[p] { return }
-                let y = Array(UnsafeBufferPointer(start: input.baseAddress! + p * n + rows.lowerBound, count: rows.count))
+                let y = counts.row(start: p * n + rows.lowerBound, count: rows.count)
                 let f = solve(y: y, logE: logE, scale: setup.axis.scale, edgeColumns: [], range: options.exponentRange)
                 if f.failure == nil { slots.set(p, PowerLawParameters(a: f.a, r: f.r)) }
             }
@@ -334,10 +334,13 @@ public enum EELSModelFit {
         let e1 = setup.axis.energy(ofChannel: setup.start)
         let window = try PowerLawWindow(axis: setup.axis, from: e1, to: setup.firstOnset - options.preEdgeSafeWindowEV)
         let n = coreLoss.channels
-        return coreLoss.storedCounts.withDoubles { counts in
+        let counts = coreLoss.storedCounts
+        var scratch = [Double](repeating: 0, count: max(n, 1))
+        return scratch.withUnsafeMutableBufferPointer { row in
             (0 ..< coreLoss.pixelCount).map { p -> PowerLawParameters? in
                 if let mask, !mask[p] { return nil }
-                switch PowerLawFit.estimate(UnsafeBufferPointer(start: counts.baseAddress! + p * n, count: n), window: window) {
+                counts.copy(start: p * n, count: n, into: row.baseAddress!)
+                switch PowerLawFit.estimate(UnsafeBufferPointer(start: row.baseAddress!, count: n), window: window) {
                 case .success(let f): return PowerLawParameters(a: f.a, r: f.r)
                 case .failure: return nil
                 }
@@ -456,13 +459,12 @@ public enum EELSModelFit {
         let slots = EELSSlots<WindowedPixel?>(count: np, initial: nil)
         let bgLogE = bgRows.map { rs in rs.flatMap { r in r.map { log(basis.energies[$0]) } } }
         let range = options.exponentRange
-        try coreLoss.storedCounts.withDoubles { counts in
-            nonisolated(unsafe) let input = counts
+        let counts = coreLoss.storedCounts
+        do {
             try EELSParallel.forEachPixel(count: np, cancelled: cancelled, progress: progress) { p in
                 if let mask, !mask[p] { slots.set(p, WindowedPixel(failure: .masked)); return }
-                let base = input.baseAddress! + p * n
                 var out = WindowedPixel()
-                var work = Array(UnsafeBufferPointer(start: base, count: n))          // the spectrum with the edges fitted so far stripped
+                var work = counts.row(start: p * n, count: n)                          // the spectrum with the edges fitted so far stripped
                 for g in 0 ..< m {
                     var yb = [Double]()
                     for r in bgRows[g] { yb += r.map { work[$0] } }
