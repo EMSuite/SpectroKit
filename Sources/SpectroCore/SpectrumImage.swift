@@ -84,16 +84,75 @@ package nonisolated protocol CSRSpectrumStore: Sendable {
 
 // MARK: - Dense
 
-/// `(ny, nx, channels)` row-major counts.
+/// `(ny, nx, channels)` row-major counts, held as UInt16 when every count fits 16 bits (most EDS spectrum images: Bruker .bcf, many .spd,
+/// DM4 EDS cubes), as HyperSpy holds the file's own dtype, else as UInt32 (SpectroKit#95). Every sum is the same exact UInt64 sum either way.
 public nonisolated struct DenseSpectrumImage: SpectrumImage {
     public let ny: Int
     public let nx: Int
     public let channels: Int
-    package let counts: [UInt32]
 
+    private enum Storage: Sendable {
+        case narrow([UInt16])
+        case wide([UInt32])
+    }
+
+    private let storage: Storage
+
+    /// Bytes one count takes: 2 when every count fits 16 bits, else 4.
+    public var bytesPerCount: Int {
+        if case .narrow = storage { return 2 }
+        return 4
+    }
+
+    /// Takes the counts as UInt16 when every one fits, else keeps them as UInt32.
     public init(ny: Int, nx: Int, channels: Int, counts: [UInt32]) {
         precondition(counts.count == ny * nx * channels, "DenseSpectrumImage: counts must be ny*nx*channels")
-        self.ny = ny; self.nx = nx; self.channels = channels; self.counts = counts
+        self.ny = ny; self.nx = nx; self.channels = channels
+        if counts.allSatisfy({ $0 <= UInt32(UInt16.max) }) {
+            storage = .narrow(counts.map { UInt16(truncatingIfNeeded: $0) })
+        } else {
+            storage = .wide(counts)
+        }
+    }
+
+    /// 16-bit counts, held as they are. Its own label, so an array literal still means the `[UInt32]` initialiser (no ambiguity for callers).
+    public init(ny: Int, nx: Int, channels: Int, counts16 counts: [UInt16]) {
+        precondition(counts.count == ny * nx * channels, "DenseSpectrumImage: counts must be ny*nx*channels")
+        self.ny = ny; self.nx = nx; self.channels = channels
+        storage = .narrow(counts)
+    }
+
+    /// Every count as UInt32: a full-size copy when held as UInt16 (tests and small cubes; the sums read the stored values).
+    package var counts: [UInt32] {
+        switch storage {
+        case .narrow(let a): a.map { UInt32($0) }
+        case .wide(let a): a
+        }
+    }
+
+    /// Count `i` (`(y * nx + x) * channels + c`).
+    package func count(at i: Int) -> UInt32 {
+        switch storage {
+        case .narrow(let a): UInt32(a[i])
+        case .wide(let a): a[i]
+        }
+    }
+
+    /// Adds `w` times pixel `p`'s spectrum to `acc` (`channels` entries).
+    package func accumulate(pixel p: Int, weight w: Double, into acc: inout [Double]) {
+        let base = p * channels
+        switch storage {
+        case .narrow(let a): for c in 0..<channels { acc[c] += w * Double(a[base + c]) }
+        case .wide(let a): for c in 0..<channels { acc[c] += w * Double(a[base + c]) }
+        }
+    }
+
+    /// Every count as a Double, pixel-major.
+    package func doubles() -> [Double] {
+        switch storage {
+        case .narrow(let a): a.map { Double($0) }
+        case .wide(let a): a.map { Double($0) }
+        }
     }
 
     public func sum(mask: PixelMask?) -> [UInt64] {
@@ -104,8 +163,17 @@ public nonisolated struct DenseSpectrumImage: SpectrumImage {
     public func sum(mask: PixelMask?, cancelled: @Sendable () -> Bool = SpectroCancellation.task,
                      progress: (@Sendable (Double) -> Void)? = nil) throws -> [UInt64] {
         precondition(mask == nil || mask!.count == ny * nx, "mask length must be ny*nx")
+        switch storage {
+        case .narrow(let a): return try Self.sum(a, ny * nx, channels, mask, cancelled, progress)
+        case .wide(let a): return try Self.sum(a, ny * nx, channels, mask, cancelled, progress)
+        }
+    }
+
+    private static func sum<T: FixedWidthInteger & UnsignedInteger>(
+        _ counts: [T], _ n: Int, _ channels: Int, _ mask: PixelMask?, _ cancelled: @Sendable () -> Bool,
+        _ progress: (@Sendable (Double) -> Void)?
+    ) throws -> [UInt64] {
         var out = [UInt64](repeating: 0, count: channels)
-        let n = ny * nx
         for start in stride(from: 0, to: n, by: spectrumBlockPixels) {
             try SpectroCancellation.check(cancelled)
             for p in start..<min(start + spectrumBlockPixels, n) where mask?[p] ?? true {
@@ -124,7 +192,16 @@ public nonisolated struct DenseSpectrumImage: SpectrumImage {
 
     public func windowSums(_ ranges: [Range<Int>], cancelled: @Sendable () -> Bool = SpectroCancellation.task,
                             progress: (@Sendable (Double) -> Void)? = nil) throws -> [[UInt64]] {
-        let n = ny * nx
+        switch storage {
+        case .narrow(let a): return try Self.windowSums(a, ny * nx, channels, ranges, cancelled, progress)
+        case .wide(let a): return try Self.windowSums(a, ny * nx, channels, ranges, cancelled, progress)
+        }
+    }
+
+    private static func windowSums<T: FixedWidthInteger & UnsignedInteger>(
+        _ counts: [T], _ n: Int, _ channels: Int, _ ranges: [Range<Int>], _ cancelled: @Sendable () -> Bool,
+        _ progress: (@Sendable (Double) -> Void)?
+    ) throws -> [[UInt64]] {
         var out = [[UInt64]](repeating: [UInt64](repeating: 0, count: n), count: ranges.count)
         let total = Double(max(ranges.count * n, 1))
         for (r, range) in ranges.enumerated() {

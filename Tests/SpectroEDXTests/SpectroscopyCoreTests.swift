@@ -280,8 +280,9 @@ struct SpectroscopyCoreTests {
         #expect(sparse.sum(mask: mask) == dense.sum(mask: mask))
         #expect((sparse.sum(mask: mask).reduce(0, +) < sparse.sum(mask: nil).reduce(0, +)) == true)
         // naive reference, pixel by pixel, from the dense cube and the spectrum-level routine
+        let denseCounts = dense.counts
         for p in 0..<99 {
-            let spec = (0..<400).map { UInt64(dense.counts[p * 400 + $0]) }
+            let spec = (0..<400).map { UInt64(denseCounts[p * 400 + $0]) }
             let ref = WindowIntensity.netCounts(spectrum: spec, windows: resolved)
             for w in 0..<ls.count { #expect(a[w][p].bitPattern == ref[w].bitPattern, "pixel \(p) window \(w)") }
         }

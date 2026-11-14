@@ -236,8 +236,7 @@ public struct SpectrumLineProfile: Sendable, Equatable {
         func add(pixel p: Int, weight w: Double, into acc: inout [Double]) {
             switch storage {
             case .dense(let d):
-                let base = p * channels
-                for c in 0..<channels { acc[c] += w * Double(d.counts[base + c]) }
+                d.accumulate(pixel: p, weight: w, into: &acc)
             case .sparse(let s):
                 for k in s.rowOffsets[p]..<s.rowOffsets[p + 1] { acc[Int(s.channelIndex[k])] += w * Double(s.counts[k]) }
             case .other(let image):
