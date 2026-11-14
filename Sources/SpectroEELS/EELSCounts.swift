@@ -106,6 +106,15 @@ public nonisolated struct EELSCounts: Sendable, Equatable, RandomAccessCollectio
         }
     }
 
+    /// The `count` counts from `start` as a new `[Double]` (one pixel's spectrum or a part of it): a float32 cube is widened that
+    /// row only, never as a whole (SpectroKit#97).
+    public func row(start: Int, count: Int) -> [Double] {
+        [Double](unsafeUninitializedCapacity: count) { buffer, initialized in
+            if let base = buffer.baseAddress { copy(start: start, count: count, into: base) }
+            initialized = count
+        }
+    }
+
     /// Whether every count is finite; the index of the first that is not, else nil.
     public func firstNonFinite() -> Int? {
         switch storage {

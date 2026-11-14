@@ -20,7 +20,7 @@ public nonisolated struct CoreLossSpectrumImage: Sendable {
     /// The counts at the precision they were given (`EELSCounts`): a float32 cube stays four bytes a count.
     public let storedCounts: EELSCounts
     /// Every count as a Double: the stored array when the counts are Doubles, else a widened full-size copy. For a one-off; per-pixel and
-    /// whole-cube work in the kit reads `storedCounts` (`withRow`, `withDoubles`).
+    /// whole-cube work in the kit reads `storedCounts` a pixel at a time (`copy`, `row`, `withRow`).
     public var counts: [Double] { storedCounts.doubles }
     public let energyOffsetEV: Double
     public let energyScaleEV: Double
@@ -232,8 +232,13 @@ public nonisolated enum EELSEdgeQuantification {
             do { stop = try llAxis.zeroLossStop(forFixedThreshold: integrationWidthEV) } catch {
                 throw EELSEdgeError.invalidIntegrationWidth(integrationWidthEV)       // Δ below the low-loss axis start
             }
-            lowLossRaw = ll.storedCounts.withDoubles { b in
-                (0 ..< np).map { p in NumpySum.pairwise(b.baseAddress! + p * ll.channels, count: stop) }
+            // One pixel's low loss at a time, as Doubles: a float32 cube is never widened whole (SpectroKit#97).
+            var lowRow = [Double](repeating: 0, count: max(stop, 1))
+            lowLossRaw = lowRow.withUnsafeMutableBufferPointer { row in
+                (0 ..< np).map { p in
+                    ll.storedCounts.copy(start: p * ll.channels, count: stop, into: row.baseAddress!)
+                    return NumpySum.pairwise(row.baseAddress!, count: stop)
+                }
             }
             route = "I_low(Δ): low-loss sum to \(integrationWidthEV) eV (Egerton eq. 4.66)"
         case .zeroLoss(let map):
@@ -244,10 +249,13 @@ public nonisolated enum EELSEdgeQuantification {
 
         var pixels = [ArealDensityPixel]()
         pixels.reserveCapacity(np)
-        try coreLoss.storedCounts.withDoubles { buf in
+        var scratch = [Double](repeating: 0, count: max(nch, 1))
+        let coreCounts = coreLoss.storedCounts
+        try scratch.withUnsafeMutableBufferPointer { row in
             for p in 0 ..< np {
                 if p % 4096 == 0 { try SpectroCancellation.check(cancelled) }
-                let spectrum = UnsafeBufferPointer(rebasing: buf[(p * nch) ..< ((p + 1) * nch)])
+                coreCounts.copy(start: p * nch, count: nch, into: row.baseAddress!)
+                let spectrum = UnsafeBufferPointer(start: row.baseAddress!, count: nch)
                 pixels.append(pixel(spectrum, window: window, channels: channels, energies: energies, scale: scale,
                                     sigma: sigma, lowLossRaw: lowLossRaw[p], dose: coreLossToLowLossDose))
             }

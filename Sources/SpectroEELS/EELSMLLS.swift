@@ -172,12 +172,12 @@ public enum EELSMLLS {
         let logE = window.map { log(basis.energies[$0]) }
         let refColumns = options.references.map { Array($0[window]) }
         let slots = EELSSlots<EELSMLLSPixel?>(count: np, initial: nil)
-        try coreLoss.storedCounts.withDoubles { counts in
-            nonisolated(unsafe) let input = counts
+        let counts = coreLoss.storedCounts                              // read a pixel at a time, never widened whole (SpectroKit#97)
+        do {
             try EELSParallel.forEachPixel(count: np, cancelled: cancelled, progress: progress) { p in
                 if let mask, !mask[p] { slots.set(p, failed(.masked)); return }
                 guard let r = exponents[p] else { slots.set(p, failed(.fitFailed)); return }
-                let y = Array(UnsafeBufferPointer(start: input.baseAddress! + p * n + window.lowerBound, count: window.count))
+                let y = counts.row(start: p * n + window.lowerBound, count: window.count)
                 var columns: [[Double]] = [logE.map { exp(-r * $0) * basis.scale }]
                 for g in 0 ..< m { columns.append(basis.column(group: g, pixel: p, rows: window)) }
                 columns.append(contentsOf: refColumns)

@@ -23,7 +23,7 @@ public nonisolated struct LowLossSpectrumImage: Sendable {
     /// The counts at the precision they were given (`EELSCounts`): a float32 cube stays four bytes a count.
     public let storedCounts: EELSCounts
     /// Every count as a Double: the stored array when the counts are Doubles, else a widened full-size copy. For a one-off; per-pixel and
-    /// whole-cube work in the kit reads `storedCounts` (`withRow`, `withDoubles`).
+    /// whole-cube work in the kit reads `storedCounts` (`withRow`, `copy`, `row`).
     public var counts: [Double] { storedCounts.doubles }
     /// Energy of channel 0, eV.
     public let energyOffsetEV: Double
