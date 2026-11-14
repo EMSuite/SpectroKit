@@ -115,8 +115,8 @@ public nonisolated struct DenseSpectrumImage: SpectrumImage {
         }
     }
 
-    /// 16-bit counts, held as they are.
-    public init(ny: Int, nx: Int, channels: Int, counts: [UInt16]) {
+    /// 16-bit counts, held as they are. Its own label, so an array literal still means the `[UInt32]` initialiser (no ambiguity for callers).
+    public init(ny: Int, nx: Int, channels: Int, counts16 counts: [UInt16]) {
         precondition(counts.count == ny * nx * channels, "DenseSpectrumImage: counts must be ny*nx*channels")
         self.ny = ny; self.nx = nx; self.channels = channels
         storage = .narrow(counts)

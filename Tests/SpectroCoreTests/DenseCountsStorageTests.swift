@@ -34,7 +34,7 @@ struct DenseCountsStorageTests {
         let image = DenseSpectrumImage(ny: 5, nx: 7, channels: 64, counts: counts)
         #expect(image.bytesPerCount == 2)
         #expect(image.counts == counts)
-        let direct = DenseSpectrumImage(ny: 5, nx: 7, channels: 64, counts: counts.map { UInt16($0) })
+        let direct = DenseSpectrumImage(ny: 5, nx: 7, channels: 64, counts16: counts.map { UInt16($0) })
         #expect(direct.bytesPerCount == 2)
         #expect(direct.counts == counts)
     }
