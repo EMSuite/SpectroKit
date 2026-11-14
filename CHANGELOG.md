@@ -8,6 +8,14 @@ each entry from the merged pull requests' titles; a breaking change's Migration 
 Every quantification and thickness result reports `validation: "none"`: agreement with exSpy and HyperSpy is not validation on a
 sample of known composition.
 
+## [0.14.2](https://github.com/macEMSuite/SpectroKit/compare/0.14.1...0.14.2) (2026-11-14)
+
+
+### Performance Improvements
+
+* a dense EDS spectrum image holds 16-bit counts at two bytes ([#114](https://github.com/macEMSuite/SpectroKit/issues/114)) ([8e2c0ca](https://github.com/macEMSuite/SpectroKit/commit/8e2c0cabe79c22cad49fcef2b4b79506b6cdf702))
+* EELS quantification, the edge model, MLLS and thickness read a float32 cube a pixel at a time ([#113](https://github.com/macEMSuite/SpectroKit/issues/113)) ([02b6aca](https://github.com/macEMSuite/SpectroKit/commit/02b6acaaf8f607270fafb34abf0917a06a69ad63))
+
 ## [0.14.1](https://github.com/macEMSuite/SpectroKit/compare/0.14.0...0.14.1) (2026-11-14)
 
 
