@@ -153,8 +153,8 @@ public enum SpectrumSmoothing: Sendable, Equatable {
     /// (`[(row * nx + column) * channels + channel]`). Any other conformer is refused.
     public func smoothedSpectra(of image: some SpectrumImage) throws -> [Double] {
         let flat: [Double]
-        if let d = image as? DenseSpectrumImage { flat = d.counts.map { Double($0) } }
-        else if let s = image as? SparseSpectrumImage { flat = s.densified().counts.map { Double($0) } }
+        if let d = image as? DenseSpectrumImage { flat = d.doubles() }
+        else if let s = image as? SparseSpectrumImage { flat = s.densified().doubles() }
         else { throw SpectrumSmoothingError(description: "This spectrum image type cannot be read pixel by pixel.") }
         return try smoothBatch(flat, spectrumLength: image.channels)
     }
