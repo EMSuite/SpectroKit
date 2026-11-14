@@ -7,7 +7,7 @@
 
 import Foundation
 import Testing
-@testable import SpectroCore
+import SpectroCore
 
 struct DenseCountsStorageTests {
 
