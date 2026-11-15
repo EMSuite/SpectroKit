@@ -626,10 +626,29 @@ public nonisolated enum PooledQuantifier {
 
     package static func geometry(_ method: QuantificationMethod, _ meta: SpectrumImageMetadata) -> Result<FourDetectorGeometry, QuantificationRefusal> {
         if meta.origin == .gmsDM4 {
-            return .failure(.init("GMS files: the stage tilt and the four detector segments are not read yet (open item), so the absorption geometry is unknown"))
+            // A GMS file names one detector: one azimuth, one elevation (`EDS.Detector Info.*`), and the stage tilt (`Microscope
+            // Info.Stage Position.Stage Alpha/Beta`), the geometry exSpy's `take_off_angle` computes from (mac4DSTEM#168). Each
+            // missing tag is refused by name rather than guessed; a four-segment geometry is never assumed for GMS.
+            // DEVIATION from exSpy, registered in docs/parity.md (`take_off_angle` row): exSpy fills a missing tilt, azimuth or
+            // elevation from its preferences (0, 0, 35°); SpectroKit refuses by name, as it does for Velox.
+            guard meta.alphaTiltDegrees != nil else {
+                return .failure(.init("GMS file: no stage tilt (Microscope Info › Stage Position › Stage Alpha), so the absorption geometry is unknown"))
+            }
+            guard meta.detectors.count == 1, let detector = meta.detectors.first else {
+                return .failure(.init("GMS file: no EDS detector geometry (EDS › Detector Info), so the absorption geometry is unknown"))
+            }
+            guard detector.azimuthDegrees != nil else {
+                return .failure(.init("GMS file: no detector azimuth (EDS › Detector Info › Azimuthal angle), so the absorption geometry is unknown"))
+            }
+            guard detector.elevationDegrees != nil else {
+                return .failure(.init("GMS file: no detector elevation (EDS › Detector Info › Elevation angle), so the absorption geometry is unknown"))
+            }
         }
         let segs = meta.detectors.map {
-            DetectorSegment(label: $0.name, azimuthDegrees: $0.azimuthDegrees, elevationDegrees: $0.elevationDegrees, solidAngleSr: $0.solidAngle)
+            // One GMS detector: its solid angle only weights it against itself, and exSpy's take-off angle has none; a file that
+            // states none (real GMS files do not) is weighted 1, which leaves the angle exactly exSpy's.
+            DetectorSegment(label: $0.name, azimuthDegrees: $0.azimuthDegrees, elevationDegrees: $0.elevationDegrees,
+                            solidAngleSr: $0.solidAngle ?? (meta.origin == .gmsDM4 ? 1 : nil))
         }
         do { return .success(try FourDetectorGeometry(segments: segs, tiltAlphaDegrees: meta.alphaTiltDegrees, tiltBetaDegrees: meta.betaTiltDegrees ?? 0)) }
         catch { return .failure(.init((error as? LocalizedError)?.errorDescription ?? "\(error)")) }

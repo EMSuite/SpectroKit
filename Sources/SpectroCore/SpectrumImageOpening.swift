@@ -184,6 +184,12 @@ public nonisolated enum SpectrumImageOpener {
                 name: "EDS", azimuthDegrees: t.azimuthDegrees, elevationDegrees: t.elevationDegrees,
                 solidAngle: t.solidAngle, liveTime: t.liveTime, realTime: t.realTime)]
         }
+        // The stage tilt as RosettaSciIO maps it (`Microscope Info.Stage Position.Stage Alpha/Beta` → `Stage.tilt_alpha/beta`),
+        // the tilt exSpy's `take_off_angle` reads (mac4DSTEM#168). The EDS group's own "Detector Info.Stage tilt" is not read: the
+        // reference ignores it, and real GMS files hold 0 there while the stage stood at another angle.
+        let acquisition = AcquisitionMetadata.dm(eds, convention: .rosettaSciIO)
+        meta.alphaTiltDegrees = acquisition.stageTiltAlphaDeg?.value
+        meta.betaTiltDegrees = acquisition.stageTiltBetaDeg?.value
         // DEVIATION from rosettasciio (which reads no beam energy for an EDS object): the object's own Microscope Info voltage;
         // the source is kept for the provenance line. A caller may supply another when the object states none.
         if let b = BeamEnergy.resolve(rawObjectVoltage: eds.voltage, suppliedKV: nil, suppliedAs: .file, sameRun: false) {

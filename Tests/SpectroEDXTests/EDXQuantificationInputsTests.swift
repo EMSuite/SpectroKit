@@ -113,8 +113,39 @@ struct EDXQuantificationInputsTests {
 
     @Test func takeOffRefusesWithTheReason() {
         #expect(throws: (any Error).self) { try EDXQuantification.takeOffDegrees(metadata: Self.veloxMetadata(alpha: nil)) }
-        var gms = Self.veloxMetadata(); gms.origin = .gmsDM4
-        do { _ = try EDXQuantification.takeOffDegrees(metadata: gms); Issue.record("GMS has no geometry") }
-        catch { #expect((error as? LocalizedError)?.errorDescription?.contains("GMS") == true) }
+    }
+
+    // MARK: GMS: one detector and the stage tilt, as exSpy (mac4DSTEM#168)
+
+    private static func gmsMetadata(alpha: Double? = 10, beta: Double? = 0, azimuth: Double? = 45, elevation: Double? = 22,
+                                    solidAngle: Double? = nil) -> SpectrumImageMetadata {
+        var m = metadata()
+        m.origin = .gmsDM4
+        m.alphaTiltDegrees = alpha; m.betaTiltDegrees = beta
+        m.detectors = [SpectrumDetectorSegment(name: "EDS", azimuthDegrees: azimuth, elevationDegrees: elevation, solidAngle: solidAngle)]
+        return m
+    }
+
+    /// exSpy's own example (`exspy/utils/eds/_geometry.py::take_off_angle` docstring): tilt 10°, β 0, azimuth 45°, elevation 22°
+    /// gives 28.865971201155283°. A GMS file states no solid angle, and one detector needs none. Mutation: the blanket GMS refusal
+    /// back - red.
+    @Test func aGMSFileTakesOffAsExSpyComputesItFromItsOneDetector() throws {
+        let angle = try EDXQuantification.takeOffDegrees(metadata: Self.gmsMetadata())
+        #expect(abs(angle - 28.865971201155283) < 1e-9)
+        let withSolidAngle = try EDXQuantification.takeOffDegrees(metadata: Self.gmsMetadata(solidAngle: 0.13))
+        #expect(abs(withSolidAngle - angle) < 1e-12, "one detector: its solid angle weights nothing")
+    }
+
+    /// Each missing GMS tag is refused by its name, never guessed. Mutation: a default tilt or angle - red.
+    @Test func aGMSFileMissingATagIsRefusedNamingIt() {
+        func reason(_ m: SpectrumImageMetadata) -> String {
+            do { _ = try EDXQuantification.takeOffDegrees(metadata: m); return "" }
+            catch { return (error as? LocalizedError)?.errorDescription ?? "\(error)" }
+        }
+        #expect(reason(Self.gmsMetadata(alpha: nil)).contains("Stage Alpha"))
+        #expect(reason(Self.gmsMetadata(azimuth: nil)).contains("Azimuthal angle"))
+        #expect(reason(Self.gmsMetadata(elevation: nil)).contains("Elevation angle"))
+        var none = Self.gmsMetadata(); none.detectors = []
+        #expect(reason(none).contains("Detector Info"))
     }
 }
