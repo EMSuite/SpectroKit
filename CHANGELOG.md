@@ -8,6 +8,13 @@ each entry from the merged pull requests' titles; a breaking change's Migration 
 Every quantification and thickness result reports `validation: "none"`: agreement with exSpy and HyperSpy is not validation on a
 sample of known composition.
 
+## [0.14.3](https://github.com/macEMSuite/SpectroKit/compare/0.14.2...0.14.3) (2026-11-15)
+
+
+### Bug Fixes
+
+* a GMS EDS file takes its absorption geometry from its one detector and the stage tilt, as exSpy ([#117](https://github.com/macEMSuite/SpectroKit/issues/117)) ([7b5fa85](https://github.com/macEMSuite/SpectroKit/commit/7b5fa8585057c72670bf060ff8719142ab9af0e5))
+
 ## [0.14.2](https://github.com/macEMSuite/SpectroKit/compare/0.14.1...0.14.2) (2026-11-14)
 
 
