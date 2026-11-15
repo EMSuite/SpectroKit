@@ -23,7 +23,6 @@ package nonisolated enum IncompleteGamma {
         return lgamma_r(a, &sign)
     }
 
-
     /// Series / continued-fraction convergence tolerance (relative).
     package static let seriesTolerance = 1e-15
     /// The quantile stops when the bracket is narrower than this relative width,
