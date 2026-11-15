@@ -629,6 +629,8 @@ public nonisolated enum PooledQuantifier {
             // A GMS file names one detector: one azimuth, one elevation (`EDS.Detector Info.*`), and the stage tilt (`Microscope
             // Info.Stage Position.Stage Alpha/Beta`), the geometry exSpy's `take_off_angle` computes from (mac4DSTEM#168). Each
             // missing tag is refused by name rather than guessed; a four-segment geometry is never assumed for GMS.
+            // DEVIATION from exSpy, registered in docs/parity.md (`take_off_angle` row): exSpy fills a missing tilt, azimuth or
+            // elevation from its preferences (0, 0, 35°); SpectroKit refuses by name, as it does for Velox.
             guard meta.alphaTiltDegrees != nil else {
                 return .failure(.init("GMS file: no stage tilt (Microscope Info › Stage Position › Stage Alpha), so the absorption geometry is unknown"))
             }
