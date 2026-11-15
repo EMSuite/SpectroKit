@@ -27,6 +27,7 @@
 //
 
 import Foundation
+import SpectroCore
 
 /// Which quantification method, with its factors in the order of `EDXQuantificationSetup.elements`.
 public nonisolated enum EDXQuantificationMethod: Sendable, Equatable {
@@ -150,9 +151,11 @@ public nonisolated enum EDXQuantification {
     /// pixel's live time (zeta and cross section; a pixel with live time <= 0 recorded nothing and fails).
     /// `takeOffDegreesPerPixel[pixel]` replaces `setup.absorption.takeOffDegrees` at that pixel (a tilted or curved specimen, a tilt
     /// series): it needs an absorption setting, one angle per pixel, and a pixel whose angle is not in (0, 90] degrees fails.
+    /// `cancelled` is asked before every chunk of pixels; true throws `SpectroCancelled` and nothing is returned.
     public static func quantifyMaps(intensityMaps: [[Double]], rows: Int, columns: Int, setup: EDXQuantificationSetup,
                                     navigationMask: [Bool]? = nil, liveTimesSeconds: [Double]? = nil,
-                                    takeOffDegreesPerPixel: [Double]? = nil) throws -> EDXQuantificationMaps {
+                                    takeOffDegreesPerPixel: [Double]? = nil,
+                                    cancelled: @Sendable () -> Bool = SpectroCancellation.task) throws -> EDXQuantificationMaps {
         let n = intensityMaps.count
         try validate(setup, count: n)
         let (pixels, overflow) = rows.multipliedReportingOverflow(by: columns)
@@ -178,30 +181,22 @@ public nonisolated enum EDXQuantification {
         var iterations = [Int](repeating: 0, count: pixels)
         var failures = [String?](repeating: nil, count: pixels)
 
-        // Pixels are independent, so the loop runs in chunks on all cores; each chunk writes its own slots, and the maps are
-        // assembled afterwards in pixel order, so the result does not depend on the schedule.
+        // Pixels are independent, so the loop runs in chunks on all cores (`SpectroParallel`); each chunk writes its own slots, and
+        // the maps are assembled afterwards in pixel order, so the result does not depend on the schedule.
         enum Outcome { case skipped, ok(EDXQuantificationPixel), failed(String) }
-        final class Slots: @unchecked Sendable { var outcomes: [Outcome]; init(_ n: Int) { outcomes = [Outcome](repeating: .skipped, count: n) } }
-        let slots = Slots(pixels)
-        let chunk = 2048
-        let chunks = (pixels + chunk - 1) / chunk
-        slots.outcomes.withUnsafeMutableBufferPointer { buffer in
-            nonisolated(unsafe) let out = buffer
-            DispatchQueue.concurrentPerform(iterations: chunks) { ci in
-                for p in (ci * chunk)..<min(pixels, (ci + 1) * chunk) {
-                    if navigationMask?[p] == true { continue }
-                    do {
-                        out[p] = .ok(try solve((0..<n).map { intensityMaps[$0][p] }, setup: setup,
-                                               liveTime: liveTimesSeconds?[p] ?? setup.liveTimeSeconds,
-                                               takeOffDegrees: takeOffDegreesPerPixel?[p]))
-                    } catch {
-                        out[p] = .failed((error as? LocalizedError)?.errorDescription ?? "\(error)")
-                    }
-                }
+        let slots = SpectroSlots<Outcome>(count: pixels, initial: .skipped)
+        try SpectroParallel.forEachPixel(count: pixels, chunk: 2048, cancelled: cancelled) { p in
+            if navigationMask?[p] == true { return }
+            do {
+                slots.set(p, .ok(try solve((0..<n).map { intensityMaps[$0][p] }, setup: setup,
+                                           liveTime: liveTimesSeconds?[p] ?? setup.liveTimeSeconds,
+                                           takeOffDegrees: takeOffDegreesPerPixel?[p])))
+            } catch {
+                slots.set(p, .failed((error as? LocalizedError)?.errorDescription ?? "\(error)"))
             }
         }
         for p in 0..<pixels {
-            switch slots.outcomes[p] {
+            switch slots[p] {
             case .skipped: continue
             case .ok(let r):
                 for e in 0..<n {

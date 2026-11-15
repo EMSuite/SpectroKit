@@ -8,10 +8,24 @@
 
 import Foundation
 import Testing
+import SpectroCore
 import SpectroTestSupport
 import SpectroEDX
 
 struct DetectorAndMapSigmaTests {
+
+    /// Both map passes take a cancel (#106): true throws `SpectroCancelled` and nothing is returned. Red under: the calls without one.
+    @Test func theMapsStopOnACancel() throws {
+        let (I, _) = Self.planted()
+        let s = Self.setup(thickness: 200)
+        #expect(throws: SpectroCancelled.self) {
+            try EDXQuantification.quantifyMaps(intensityMaps: I, rows: Self.rows, columns: Self.columns, setup: s, cancelled: { true })
+        }
+        #expect(throws: SpectroCancelled.self) {
+            try EDXQuantification.quantifyMapsWithSigma(intensityMaps: I, rows: Self.rows, columns: Self.columns, setup: s,
+                                                        thicknessSigmaNm: 20, cancelled: { true })
+        }
+    }
 
     private static let elements = ["Al", "Cr", "Ni"]
     private static let base: [Double] = [2000, 1500, 800]

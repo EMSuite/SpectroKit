@@ -243,6 +243,7 @@ public nonisolated struct ElementProposer: Sendable {
         var statistic: Double
     }
 
+    // `@unchecked Sendable`: each candidate pass writes only its own slot, read after the parallel loop joins.
     private struct ResultBox: @unchecked Sendable { var buffer: UnsafeMutableBufferPointer<Result<Pass, Error>?> }
 
     /// One fit of `groups` against `data`: no cancellation check, no progress, no shared state (safe to run concurrently).

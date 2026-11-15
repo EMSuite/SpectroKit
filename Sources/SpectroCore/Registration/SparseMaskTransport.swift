@@ -149,8 +149,10 @@ extension MaskTransport {
     /// Transports each region of the 4D grid onto the spectrum grid of `registration`, sparse. Region `i` of the result equals
     /// `transport(mask:registration:)` of the mask holding `regions[i]`'s scan pixels (see the file header). Regions are
     /// independent and run on all cores; the result does not depend on the schedule. Throws `MaskTransportError` for a singular
-    /// registration or a region pixel/run outside the scan grid.
-    public static func regions(_ regions: [SparseRegion], registration: GridRegistration) throws -> TransportedRegions {
+    /// registration or a region pixel/run outside the scan grid. `cancelled` is asked before every chunk of regions; true throws
+    /// `SpectroCancelled` and nothing is returned.
+    public static func regions(_ regions: [SparseRegion], registration: GridRegistration,
+                               cancelled: @Sendable () -> Bool = SpectroCancellation.task) throws -> TransportedRegions {
         let sw = registration.scanWidth, sh = registration.scanHeight
         let w = registration.spectrumWidth, h = registration.spectrumHeight
         guard registration.matrix.allSatisfy({ $0.isFinite && abs($0) < 1e9 }) else {
@@ -173,11 +175,10 @@ extension MaskTransport {
             .map { (m[0] * $0.0 + m[1] * $0.1 + m[2], m[3] * $0.0 + m[4] * $0.1 + m[5]) }
 
         let boxed = ResultBox(count: regions.count)
-        let chunk = 4, chunks = (regions.count + chunk - 1) / chunk
-        DispatchQueue.concurrentPerform(iterations: chunks) { ci in
+        try SpectroParallel.forEachChunk(count: regions.count, chunk: 4, cancelled: cancelled) { chunk in
             var area = [Double](repeating: 0, count: w * h)
             var stamp = [Int32](repeating: -1, count: w * h)
-            for r in (ci * chunk)..<min(regions.count, (ci + 1) * chunk) {
+            for r in chunk {
                 var touched: [Int32] = []
                 var total = 0.0, outside = 0.0
                 for idx in indices[r] {
@@ -222,7 +223,8 @@ extension MaskTransport {
     }
 }
 
-/// Slots that concurrent chunks fill at disjoint indices.
+/// Slots that concurrent chunks fill at disjoint indices. `@unchecked Sendable` because no two chunks write the same index and the
+/// slots are read only after the chunk loop has joined.
 private final class ResultBox: @unchecked Sendable {
     private let slots: UnsafeMutablePointer<TransportedRegions.Entry?>
     private let count: Int

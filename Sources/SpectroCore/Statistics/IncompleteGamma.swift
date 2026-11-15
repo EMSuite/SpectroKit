@@ -16,6 +16,13 @@
 import Foundation
 
 package nonisolated enum IncompleteGamma {
+    /// ln Γ(a) through the reentrant `lgamma_r`: `lgamma` writes the sign to Darwin's global `signgam`, a data race when the pixel
+    /// loops call this on several threads (#106). Same value.
+    package static func logGamma(_ a: Double) -> Double {
+        var sign: Int32 = 0
+        return lgamma_r(a, &sign)
+    }
+
 
     /// Series / continued-fraction convergence tolerance (relative).
     package static let seriesTolerance = 1e-15
@@ -42,7 +49,7 @@ package nonisolated enum IncompleteGamma {
     /// log(x^a e^-x / Γ(a)). For a >= 10 it is written about x = a with Stirling's series for log Γ(a), so the a log x and x terms
     /// do not cancel (at a = 1e6 the direct form loses about 1e-10 relative per unit of a log x).
     package static func logPrefactor(a: Double, x: Double) -> Double {
-        guard a >= 10 else { return -x + a * log(x) - lgamma(a) }
+        guard a >= 10 else { return -x + a * log(x) - logGamma(a) }
         let t = (x - a) / a
         let a2 = a * a
         let stirling = (1 / (12 * a)) * (1 - (1 / (30 * a2)) * (1 - (2 / (7 * a2)) * (1 - 3 / (4 * a2))))
@@ -123,7 +130,7 @@ package nonisolated enum IncompleteGamma {
             if abs(f) < quantileResidual { return x }
             if f > 0 { hi = x } else { lo = x }
             if hi - lo < quantileRelativeWidth * hi { return x }
-            let logDensity = (a - 1) * log(x) - x - lgamma(a)
+            let logDensity = (a - 1) * log(x) - x - logGamma(a)
             let density = exp(logDensity)
             var next = x - f / density
             if !(next > lo && next < hi) || !next.isFinite { next = 0.5 * (lo + hi) }

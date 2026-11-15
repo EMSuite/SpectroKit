@@ -55,6 +55,7 @@
 //
 
 import Foundation
+import SpectroCore
 
 public nonisolated struct EDXQuantificationSigma: Sendable, Equatable {
     /// The composition at the given intensities, as `EDXQuantification.quantify` returns it.
@@ -235,12 +236,14 @@ extension EDXQuantification {
     /// angles per pixel. `intensitySigmaMaps[e][pixel]` is the one-sigma of element e's intensity at a pixel (a fit's per-pixel sigma);
     /// nil = the counting statistics of raw counts (variance = I). The factor, thickness, dose and take-off sigmas are shared by every
     /// pixel. A masked pixel reads 0 (as in `quantifyMaps`); a pixel whose composition failed reads NaN (its reason in `maps.failures`),
-    /// and one whose sigma alone could not be propagated reads NaN with its reason in `sigmaFailures`.
+    /// and one whose sigma alone could not be propagated reads NaN with its reason in `sigmaFailures`. `cancelled` is asked before every
+    /// chunk of pixels of both passes; true throws `SpectroCancelled` and nothing is returned.
     public static func quantifyMapsWithSigma(intensityMaps: [[Double]], rows: Int, columns: Int, setup: EDXQuantificationSetup,
                                              intensitySigmaMaps: [[Double]]? = nil, factorRelativeSigmas: [Double]? = nil,
                                              thicknessSigmaNm: Double? = nil, doseRelativeSigma: Double? = nil,
                                              takeOffSigmaDegrees: Double? = nil, navigationMask: [Bool]? = nil,
-                                             liveTimesSeconds: [Double]? = nil, takeOffDegreesPerPixel: [Double]? = nil) throws -> EDXQuantificationSigmaMaps {
+                                             liveTimesSeconds: [Double]? = nil, takeOffDegreesPerPixel: [Double]? = nil,
+                                             cancelled: @Sendable () -> Bool = SpectroCancellation.task) throws -> EDXQuantificationSigmaMaps {
         let n = intensityMaps.count
         let (product, overflow) = rows.multipliedReportingOverflow(by: columns)
         guard rows > 0, columns > 0, !overflow else { throw QuantError.countMismatch("Each intensity map must hold rows x columns values.") }
@@ -252,36 +255,28 @@ extension EDXQuantification {
             guard sm.count == n, sm.allSatisfy({ $0.count == pixels }) else { throw QuantError.countMismatch("One sigma map of rows x columns values per intensity map.") }
         }
         let maps = try quantifyMaps(intensityMaps: intensityMaps, rows: rows, columns: columns, setup: setup, navigationMask: navigationMask,
-                                    liveTimesSeconds: liveTimesSeconds, takeOffDegreesPerPixel: takeOffDegreesPerPixel)
+                                    liveTimesSeconds: liveTimesSeconds, takeOffDegreesPerPixel: takeOffDegreesPerPixel, cancelled: cancelled)
         var wS = [[Double]](repeating: [Double](repeating: 0, count: pixels), count: n), aS = wS
         var mS: [Double]? = maps.massThickness.map { _ in [Double](repeating: 0, count: pixels) }
         var sigmaFailures = [String?](repeating: nil, count: pixels)
 
         enum Outcome { case skipped, ok(EDXQuantificationSigma), failed(String) }
-        final class Slots: @unchecked Sendable { var outcomes: [Outcome]; init(_ n: Int) { outcomes = [Outcome](repeating: .skipped, count: n) } }
-        let slots = Slots(pixels)
-        let chunk = 256
-        let chunks = (pixels + chunk - 1) / chunk
-        slots.outcomes.withUnsafeMutableBufferPointer { buffer in
-            nonisolated(unsafe) let out = buffer
-            DispatchQueue.concurrentPerform(iterations: chunks) { ci in
-                for p in (ci * chunk)..<min(pixels, (ci + 1) * chunk) {
-                    if navigationMask?[p] == true || maps.failures[p] != nil { continue }
-                    var s = setup
-                    if let a = takeOffDegreesPerPixel?[p] { s.absorption?.takeOffDegrees = a }
-                    do {
-                        out[p] = .ok(try quantifyWithSigma(
-                            intensities: (0..<n).map { intensityMaps[$0][p] }, intensitySigmas: intensitySigmaMaps.map { m in (0..<n).map { m[$0][p] } },
-                            factorRelativeSigmas: factorRelativeSigmas, thicknessSigmaNm: thicknessSigmaNm, doseRelativeSigma: doseRelativeSigma,
-                            takeOffSigmaDegrees: takeOffSigmaDegrees, setup: s, liveTimeSeconds: liveTimesSeconds?[p] ?? setup.liveTimeSeconds))
-                    } catch {
-                        out[p] = .failed((error as? LocalizedError)?.errorDescription ?? "\(error)")
-                    }
-                }
+        let slots = SpectroSlots<Outcome>(count: pixels, initial: .skipped)
+        try SpectroParallel.forEachPixel(count: pixels, chunk: 256, cancelled: cancelled) { p in
+            if navigationMask?[p] == true || maps.failures[p] != nil { return }
+            var s = setup
+            if let a = takeOffDegreesPerPixel?[p] { s.absorption?.takeOffDegrees = a }
+            do {
+                slots.set(p, .ok(try quantifyWithSigma(
+                    intensities: (0..<n).map { intensityMaps[$0][p] }, intensitySigmas: intensitySigmaMaps.map { m in (0..<n).map { m[$0][p] } },
+                    factorRelativeSigmas: factorRelativeSigmas, thicknessSigmaNm: thicknessSigmaNm, doseRelativeSigma: doseRelativeSigma,
+                    takeOffSigmaDegrees: takeOffSigmaDegrees, setup: s, liveTimeSeconds: liveTimesSeconds?[p] ?? setup.liveTimeSeconds)))
+            } catch {
+                slots.set(p, .failed((error as? LocalizedError)?.errorDescription ?? "\(error)"))
             }
         }
         for p in 0..<pixels {
-            switch slots.outcomes[p] {
+            switch slots[p] {
             case .skipped:
                 if maps.failures[p] != nil {
                     for e in 0..<n { wS[e][p] = .nan; aS[e][p] = .nan }

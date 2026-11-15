@@ -52,9 +52,11 @@ extension EELSDeconvolution {
         let kernels = psf.counts
         let signal = spectrum.counts
         try out.withUnsafeMutableBufferPointer { dst in
+            // Unsafe is sound: the buffer stays pinned for the whole joined pixel loop below and each pixel writes only its own span.
             nonisolated(unsafe) let target = dst
             try signal.withUnsafeBufferPointer { src in
                 try kernels.withUnsafeBufferPointer { ker in
+                    // Unsafe is sound: read-only for the whole joined pixel loop below, while the buffer stays pinned.
                     nonisolated(unsafe) let input = src, kernel = ker
                     try EELSParallel.forEachPixel(count: pixels, chunk: 16, cancelled: cancelled, progress: progress) { p in
                         let k = kernel.baseAddress! + (shared ? 0 : p * n)

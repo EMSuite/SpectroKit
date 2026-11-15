@@ -389,6 +389,7 @@ public nonisolated enum EELSAlignment {
         if crop { guard ilow < ihigh else { throw EELSAlignmentError.emptyAfterCrop } }
         let n = s.channels, pixels = s.pixels, offset = s.offset, scale = s.scale
         try s.counts.withUnsafeMutableStorage { singles, doubles in
+            // Unsafe is sound: the buffer stays pinned for the whole joined pixel loop below and each pixel writes only its own span.
             nonisolated(unsafe) let floats = singles?.baseAddress, wide = doubles?.baseAddress
             try EELSParallel.forEachPixel(count: pixels, cancelled: cancelled, progress: nil) { p in
                 let shift = shifts[p]

@@ -338,7 +338,7 @@ public nonisolated enum PooledQuantifier {
                 // The caller chose the model: it runs as asked (an `isOff` model is the default fit).
                 if !model.isOff {
                     let r = try EDSSumEscapeFit.run(counts: counts, axis: axis, settings: fitSettings, model: model,
-                                                    escapeRatioWarning: policy.fit.escapeRatioWarning)
+                                                    escapeRatioWarning: policy.fit.escapeRatioWarning, cancelled: cancelled)
                     fit = r.fit; sumEscapeLines = r.parameters; applied = model; keptSumEscape = r
                 } else {
                     fit = try EDSFit.run(counts: counts, axis: axis, settings: fitSettings, escapeRatioWarning: policy.fit.escapeRatioWarning)
@@ -350,7 +350,7 @@ public nonisolated enum PooledQuantifier {
                 case .always:
                     let model = SumEscapeModel(sumPeaks: true)
                     let r = try EDSSumEscapeFit.run(counts: counts, axis: axis, settings: fitSettings, model: model,
-                                                    escapeRatioWarning: policy.fit.escapeRatioWarning)
+                                                    escapeRatioWarning: policy.fit.escapeRatioWarning, cancelled: cancelled)
                     fit = r.fit; applied = model; sumEscapeLines = r.parameters; keptSumEscape = r
                 case .whenSignificant:
                     // The test: the self pair of the strongest line alone (Al K-alpha + Al K-alpha in an Al alloy), the largest sum
@@ -359,7 +359,7 @@ public nonisolated enum PooledQuantifier {
                     // so they are not the test.
                     let probe = try EDSSumEscapeFit.run(counts: counts, axis: axis, settings: fitSettings,
                                                         model: SumEscapeModel(sumPeaks: true, parentCount: 1),
-                                                        escapeRatioWarning: policy.fit.escapeRatioWarning)
+                                                        escapeRatioWarning: policy.fit.escapeRatioWarning, cancelled: cancelled)
                     let misfit = method.estimator == .poissonMaximumLikelihood ? probe.fit.reducedDeviance : probe.fit.pearsonReducedChiSquared
                     let z = SumPeakRule.significance(probe, misfit: misfit)
                     let pair = probe.sumPeaks.first?.label ?? "no self pair in the fitted range"
@@ -367,7 +367,7 @@ public nonisolated enum PooledQuantifier {
                     if probe.converged && z >= policy.fit.sumPeakSignificance {
                         let model = SumEscapeModel(sumPeaks: true)
                         let r = try EDSSumEscapeFit.run(counts: counts, axis: axis, settings: fitSettings, model: model,
-                                                        escapeRatioWarning: policy.fit.escapeRatioWarning)
+                                                        escapeRatioWarning: policy.fit.escapeRatioWarning, cancelled: cancelled)
                         if r.converged {
                             fit = r.fit; applied = model; kept = true; keptSumEscape = r
                             sumEscapeLines = [String(format: "sum peaks kept: %@ alone is c / \u{03C3}_c = %.1f \u{2265} %g above 0 (\u{03C3}_c scaled by \u{221A}max(misfit, 1))",
@@ -399,6 +399,7 @@ public nonisolated enum PooledQuantifier {
                 }
             }
         }
+        catch let cancel as SpectroCancelled { throw cancel }
         catch {
             let why = (error as? LocalizedError)?.errorDescription ?? "\(error)"
             throw QuantificationRefusal("The fit could not run: \(why).")

@@ -131,6 +131,7 @@ package nonisolated struct GOSTable: Sendable {
         return made
     }
 
+    // Unsafe is sound: `cache` is read and written only while `cacheLock` is held (`table(for:)` above, the only accessor).
     nonisolated(unsafe) private static var cache: [String: GOSTable] = [:]
     private static let cacheLock = NSLock()
 }

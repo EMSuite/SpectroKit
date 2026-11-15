@@ -101,8 +101,9 @@ public enum MaskTransport {
 
     /// Transport a class map of the 4D grid. `labels[y * scanWidth + x]` is the class (0..<classCount) or
     /// -1 for "none"; its length must be `scanWidth * scanHeight`. Throws for a singular registration or
-    /// a wrong length.
-    public static func transport(labels: [Int], classCount: Int, registration: GridRegistration)
+    /// a wrong length. `cancelled` is asked once per scan row; true throws `SpectroCancelled` and nothing is returned.
+    public static func transport(labels: [Int], classCount: Int, registration: GridRegistration,
+                                 cancelled: @Sendable () -> Bool = SpectroCancellation.task)
         throws -> TransportedLabels {
         let sw = registration.scanWidth, sh = registration.scanHeight
         let w = registration.spectrumWidth, h = registration.spectrumHeight
@@ -126,6 +127,7 @@ public enum MaskTransport {
         // The pixel's four corners, in order, in 4D centre coordinates.
         let corners: [(Double, Double)] = [(-0.5, -0.5), (0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)]
         for y in 0..<sh {
+            try SpectroCancellation.check(cancelled)
             for x in 0..<sw {
                 let cls = labels[y * sw + x]
                 let poly = corners.map { c -> (Double, Double) in
@@ -162,8 +164,9 @@ public enum MaskTransport {
     }
 
     /// One boolean mask of the 4D grid (`true` = in the region).
-    public static func transport(mask: [Bool], registration: GridRegistration) throws -> TransportedLabels {
-        try transport(labels: mask.map { $0 ? 0 : -1 }, classCount: 1, registration: registration)
+    public static func transport(mask: [Bool], registration: GridRegistration,
+                                 cancelled: @Sendable () -> Bool = SpectroCancellation.task) throws -> TransportedLabels {
+        try transport(labels: mask.map { $0 ? 0 : -1 }, classCount: 1, registration: registration, cancelled: cancelled)
     }
 
     /// The membership of class `cls` as a spectrum-grid mask plus its report.

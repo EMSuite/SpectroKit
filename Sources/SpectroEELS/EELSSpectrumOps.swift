@@ -75,8 +75,10 @@ public nonisolated enum EELSSpectrumOps {
         let scale = image.energyScaleEV
         let source = image.counts
         try counts.withUnsafeMutableBufferPointer { dst in
+            // Unsafe is sound: the buffer stays pinned for the whole joined pixel loop below and each pixel writes only its own span.
             nonisolated(unsafe) let target = dst
             try source.withUnsafeBufferPointer { src in
+                // Unsafe is sound: read-only for the whole joined pixel loop below, while the buffer stays pinned.
                 nonisolated(unsafe) let input = src
                 try EELSParallel.forEachPixel(count: pixels, cancelled: cancelled, progress: progress) { p in
                     let row = input.baseAddress! + p * n

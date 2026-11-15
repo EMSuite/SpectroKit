@@ -82,10 +82,12 @@ public struct SpectrumLineProfile: Sendable, Equatable {
     /// One pooled spectrum per step along `path`, `width` pixels wide, a step every `spacing` pixels of arc length.
     /// Throws `SpectrumLineProfileError` for fewer than two points, a non-finite coordinate, a zero-length path,
     /// a width or spacing that is not positive and finite, more than 10 million steps or 2^28 values (steps x channels), or a
-    /// `.bilinear` width over four times the scan's larger side.
+    /// `.bilinear` width over four times the scan's larger side. `cancelled` is asked once per scan row (`.hard`) or step
+    /// (`.bilinear`); true throws `SpectroCancelled` and nothing is returned.
     public static func compute(image: some SpectrumImage, path: [PixelPosition], width: Double, spacing: Double = 1,
                                weighting: LineProfileWeighting = .hard,
-                               reduction: LineProfileReduction = .mean) throws -> SpectrumLineProfile {
+                               reduction: LineProfileReduction = .mean,
+                               cancelled: @Sendable () -> Bool = SpectroCancellation.task) throws -> SpectrumLineProfile {
         guard path.count >= 2 else { throw SpectrumLineProfileError(description: "A path needs at least two points.") }
         guard path.allSatisfy({ $0.row.isFinite && $0.column.isFinite && abs($0.row) < 1e9 && abs($0.column) < 1e9 }) else {
             throw SpectrumLineProfileError(description: "A path coordinate is not finite.")
@@ -146,6 +148,7 @@ public struct SpectrumLineProfile: Sendable, Equatable {
             let tol = 1e-9
             if rLo <= rHi, cLo <= cHi {
                 for r in rLo...rHi {
+                    try SpectroCancellation.check(cancelled)
                     for c in cLo...cHi {
                         let qr = Double(r), qc = Double(c)
                         var best = -1, bestD2 = Double.infinity, bestT = 0.0, bestRaw = 0.0
@@ -180,6 +183,7 @@ public struct SpectrumLineProfile: Sendable, Equatable {
             }
             let n = max(1, Int(width.rounded()))
             for k in 0..<nSteps {
+                try SpectroCancellation.check(cancelled)
                 let g = segs[stepSeg[k]]
                 // Perpendicular unit vector (row, column) = (uc, -ur).
                 var touched: [Int: Double] = [:]
