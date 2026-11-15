@@ -10,6 +10,7 @@
 //
 
 import Foundation
+import FormatoCore
 import os
 
 package nonisolated enum SpectroParallel {
