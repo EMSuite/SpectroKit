@@ -124,8 +124,10 @@ public enum SpectrumSmoothing: Sendable, Equatable {
     }
 
     /// The same for a spectrum image held as one array, `spectrumLength` channels per spectrum, spectrum after spectrum
-    /// (`[pixel * spectrumLength + channel]`, pixels row-major); one call per spectrum, on all cores.
-    public func smoothBatch(_ data: [Double], spectrumLength n: Int) throws -> [Double] {
+    /// (`[pixel * spectrumLength + channel]`, pixels row-major); one call per spectrum, on all cores. `cancelled` is asked before every
+    /// chunk of spectra; true throws `SpectroCancelled` and nothing is returned.
+    public func smoothBatch(_ data: [Double], spectrumLength n: Int,
+                            cancelled: @Sendable () -> Bool = SpectroCancellation.task) throws -> [Double] {
         try validate()
         guard n > 0, data.count % n == 0 else {
             throw SpectrumSmoothingError(description: "\(data.count) values are not a whole number of spectra of \(n) channels.")
@@ -134,15 +136,12 @@ public enum SpectrumSmoothing: Sendable, Equatable {
         let plan = try Plan(self, length: n)
         let count = data.count / n
         var out = [Double](repeating: 0, count: data.count)
-        let chunk = 64, chunks = (count + chunk - 1) / chunk
-        out.withUnsafeMutableBufferPointer { o in
+        try out.withUnsafeMutableBufferPointer { o in
             let shared = SharedOutput(base: o.baseAddress!)
-            data.withUnsafeBufferPointer { d in
+            try data.withUnsafeBufferPointer { d in
                 let input = SharedInput(base: d.baseAddress!)
-                DispatchQueue.concurrentPerform(iterations: chunks) { ci in
-                    for p in (ci * chunk)..<min(count, (ci + 1) * chunk) {
-                        plan.apply(input.base + p * n, count: n, into: shared.base + p * n)
-                    }
+                try SpectroParallel.forEachPixel(count: count, chunk: 64, cancelled: cancelled) { p in
+                    plan.apply(input.base + p * n, count: n, into: shared.base + p * n)
                 }
             }
         }
@@ -151,14 +150,17 @@ public enum SpectrumSmoothing: Sendable, Equatable {
 
     /// The same for every pixel of a `DenseSpectrumImage` or `SparseSpectrumImage`: `ny * nx * channels` values, pixel-major
     /// (`[(row * nx + column) * channels + channel]`). Any other conformer is refused.
-    public func smoothedSpectra(of image: some SpectrumImage) throws -> [Double] {
+    public func smoothedSpectra(of image: some SpectrumImage,
+                                cancelled: @Sendable () -> Bool = SpectroCancellation.task) throws -> [Double] {
         let flat: [Double]
         if let d = image as? DenseSpectrumImage { flat = d.doubles() }
         else if let s = image as? SparseSpectrumImage { flat = s.densified().doubles() }
         else { throw SpectrumSmoothingError(description: "This spectrum image type cannot be read pixel by pixel.") }
-        return try smoothBatch(flat, spectrumLength: image.channels)
+        return try smoothBatch(flat, spectrumLength: image.channels, cancelled: cancelled)
     }
 
+    // `@unchecked Sendable`: the batch loop writes each spectrum's own span of `SharedOutput` and only reads `SharedInput`, both pinned
+    // until the pixel loop joins.
     private struct SharedOutput: @unchecked Sendable { let base: UnsafeMutablePointer<Double> }
     private struct SharedInput: @unchecked Sendable { let base: UnsafePointer<Double> }
 

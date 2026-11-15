@@ -12,6 +12,12 @@ import SpectroEELS
 
 struct EELSModelFitTests {
 
+    /// The two-area estimate takes a cancel (#106). Red under: no `cancelled`.
+    @Test func theTwoAreaEstimateStopsOnACancel() throws {
+        let c = try planted("fel-exact")
+        #expect(throws: SpectroCancelled.self) { try EELSModelFit.twoAreaBackground(coreLoss: c.core, edges: c.edges, cancelled: { true }) }
+    }
+
     private func planted(_ name: String) throws -> ModelCase {
         let all = ModelFixtures.pins["cases"] as! [String: [String: Any]]
         return try ModelFixtures.make(name, all[name]!)

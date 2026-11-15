@@ -51,7 +51,9 @@ func regionSpectrum(_ image: LoadedSpectrumImage, inside: PixelMask) -> [UInt64]
 
 Long calls take a `cancelled` closure and an optional `progress` closure. The default `cancelled` is
 ``SpectroCancellation/task``, so a call inside a Swift task stops when that task is cancelled. The check runs at a step or block
-boundary, never per value, and the call throws ``SpectroCancelled`` with nothing partial kept.
+boundary, never per value, and the call throws ``SpectroCancelled`` with nothing partial kept. The per-pixel calls (the EELS fits
+and maps, the EDX quantification maps, batch smoothing, mask transport) ask before every chunk of pixels, so a cancel lands
+within one chunk of work.
 
 ```swift
 func openCancellable(_ path: String) async throws -> LoadedSpectrumImage? {

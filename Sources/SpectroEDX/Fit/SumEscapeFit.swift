@@ -128,9 +128,12 @@ public nonisolated struct SumEscapeResult: Sendable {
 public nonisolated enum EDSSumEscapeFit {
     public static let validation = "none"
 
+    /// `cancelled` is asked before the baseline fit and before every iteration of the alternating fit; true throws `SpectroCancelled`
+    /// and nothing is returned.
     public static func run(counts: [Double], axis: EnergyAxis, settings: FitSettings, model: SumEscapeModel,
                            channels explicit: Range<Int>? = nil,
-                           escapeRatioWarning: Double = FitPolicy.default.escapeRatioWarning) throws -> SumEscapeResult {
+                           escapeRatioWarning: Double = FitPolicy.default.escapeRatioWarning,
+                           cancelled: @Sendable () -> Bool = SpectroCancellation.task) throws -> SumEscapeResult {
         if model.sumPeaks, model.parentCount < 1 { throw SumEscapeError.invalidParentCount(model.parentCount) }
         if let c = model.sumCoefficient, !(c.isFinite && c >= 0) {
             throw SumEscapeError.invalidCoefficient("The pile-up coefficient must be finite and not negative; \(c) was given.")
@@ -138,6 +141,7 @@ public nonisolated enum EDSSumEscapeFit {
         if let f = model.escapeFraction, !(f.isFinite && f >= 0 && f <= 1) {
             throw SumEscapeError.invalidCoefficient("The escape fraction must lie in 0...1; \(f) was given.")
         }
+        try SpectroCancellation.check(cancelled)
         let baseline = try EDSFit.run(counts: counts, axis: axis, settings: settings, channels: explicit, escapeRatioWarning: escapeRatioWarning)
         if model.isOff {
             return SumEscapeResult(fit: baseline, baseline: baseline, sumCoefficient: nil, sumCoefficientSigma: nil,
@@ -248,6 +252,7 @@ public nonisolated enum EDSSumEscapeFit {
         var iterations = 0, converged = false
         let maxIt = max(model.maxIterations, 1)
         while iterations < maxIt {
+            try SpectroCancellation.check(cancelled)
             iterations += 1
             let d = linearised(design, c: c, f: f, area: area)
             let r = EDSFit.fit(design: d, model: lineModel, counts: counts, settings: fitSettings, computeCovariance: false)

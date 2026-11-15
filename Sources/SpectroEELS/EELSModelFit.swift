@@ -327,8 +327,10 @@ public enum EELSModelFit {
     }
 
     /// exSpy `two_area_background_estimation()`: A and r from the two-area method over `[start, first edge - safe window]`. nil where it cannot answer.
+    /// `cancelled` is asked every 4096 pixels; true throws `SpectroCancelled` and nothing is returned.
     public static func twoAreaBackground(
-        coreLoss: CoreLossSpectrumImage, edges: [CoreLossEdge], options: EELSModelOptions = .init(), mask: PixelMask? = nil
+        coreLoss: CoreLossSpectrumImage, edges: [CoreLossEdge], options: EELSModelOptions = .init(), mask: PixelMask? = nil,
+        cancelled: @Sendable () -> Bool = SpectroCancellation.task
     ) throws -> [PowerLawParameters?] {
         let setup = try prepare(coreLoss: coreLoss, edges: edges, options: options, mask: mask, lowLoss: nil)
         let e1 = setup.axis.energy(ofChannel: setup.start)
@@ -336,16 +338,18 @@ public enum EELSModelFit {
         let n = coreLoss.channels
         let counts = coreLoss.storedCounts
         var scratch = [Double](repeating: 0, count: max(n, 1))
-        return scratch.withUnsafeMutableBufferPointer { row in
-            (0 ..< coreLoss.pixelCount).map { p -> PowerLawParameters? in
-                if let mask, !mask[p] { return nil }
+        var out = [PowerLawParameters?](repeating: nil, count: coreLoss.pixelCount)
+        try scratch.withUnsafeMutableBufferPointer { row in
+            for p in 0 ..< coreLoss.pixelCount {
+                if p % 4096 == 0 { try SpectroCancellation.check(cancelled) }
+                if let mask, !mask[p] { continue }
                 counts.copy(start: p * n, count: n, into: row.baseAddress!)
-                switch PowerLawFit.estimate(UnsafeBufferPointer(start: row.baseAddress!, count: n), window: window) {
-                case .success(let f): return PowerLawParameters(a: f.a, r: f.r)
-                case .failure: return nil
+                if case .success(let f) = PowerLawFit.estimate(UnsafeBufferPointer(start: row.baseAddress!, count: n), window: window) {
+                    out[p] = PowerLawParameters(a: f.a, r: f.r)
                 }
             }
         }
+        return out
     }
 
     // MARK: Per-edge windows

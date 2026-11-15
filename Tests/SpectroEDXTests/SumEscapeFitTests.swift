@@ -14,6 +14,13 @@ import SpectroEDX
 
 struct SumEscapeFitTests {
 
+    /// The alternating fit takes a cancel (#106), the dominant step of a pooled quantification. Red under: no `cancelled`.
+    @Test func theSumEscapeFitStopsOnACancel() throws {
+        #expect(throws: SpectroCancelled.self) {
+            try EDSSumEscapeFit.run(counts: Self.planted(), axis: Self.axis, settings: Self.settings(), model: .both, cancelled: { true })
+        }
+    }
+
     private static let axis = EnergyAxis(offset: 0, scale: 0.01, size: 2000)   // 0 to 20 keV
     private static let elements = ["Al", "Ag", "Fe"]
     private static let areas: [String: Double] = ["Al_Ka": 300_000, "Ag_La": 2_000, "Fe_Ka": 100_000]

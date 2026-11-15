@@ -107,9 +107,11 @@ public enum EELSDeconvolution {
         let why = EELSSlots<EELSUnavailable?>(count: pixels, initial: nil)
         let source = tapered.counts, zlp = zeroLoss.counts
         try out.withUnsafeMutableBufferPointer { dst in
+            // Unsafe is sound: the buffer stays pinned for the whole joined pixel loop below and each pixel writes only its own span.
             nonisolated(unsafe) let target = dst
             try source.withUnsafeBufferPointer { src in
                 try zlp.withUnsafeBufferPointer { zsrc in
+                    // Unsafe is sound: read-only for the whole joined pixel loop below, while the buffer stays pinned.
                     nonisolated(unsafe) let input = src, zinput = zsrc
                     try EELSParallel.forEachPixel(count: pixels, cancelled: cancelled, progress: progress) { p in
                         let z = realFFT(zinput.baseAddress! + p * zn, count: zn, size: size, plan: forward)
@@ -215,9 +217,11 @@ public enum EELSDeconvolution {
         let why = EELSSlots<EELSUnavailable?>(count: pixels, initial: nil)
         let clSource = clT.counts, llSource = llT.counts, unanswered = overflowed
         try out.withUnsafeMutableBufferPointer { dst in
+            // Unsafe is sound: the buffer stays pinned for the whole joined pixel loop below and each pixel writes only its own span.
             nonisolated(unsafe) let target = dst
             try clSource.withUnsafeBufferPointer { csrc in
                 try llSource.withUnsafeBufferPointer { lsrc in
+                    // Unsafe is sound: read-only for the whole joined pixel loop below, while the buffer stays pinned.
                     nonisolated(unsafe) let cinput = csrc, linput = lsrc
                     try EELSParallel.forEachPixel(count: pixels, cancelled: cancelled,
                                                   progress: progress.map { p in { @Sendable f in p(0.2 + 0.8 * f) } }) { p in

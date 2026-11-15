@@ -57,9 +57,11 @@ public enum PoolBuilder {
     }
 
     /// One pool per class of a transported label map (`names[c]` for class c). A registration whose
-    /// spectrum grid is not the image's is refused by name.
+    /// spectrum grid is not the image's is refused by name. `cancelled` is asked before each class's pool; true throws
+    /// `SpectroCancelled` and nothing is returned.
     public static func pools(image: some SpectrumImage, transported t: TransportedLabels,
-                              names: [String], kind: String, validation: String?)
+                              names: [String], kind: String, validation: String?,
+                              cancelled: @Sendable () -> Bool = SpectroCancellation.task)
         throws -> [PooledSpectrum] {
         guard t.width == image.nx, t.height == image.ny else {
             throw MaskTransportError(description: "The registration maps onto a \(t.width) x \(t.height) grid; the spectrum image is \(image.nx) x \(image.ny).")
@@ -71,6 +73,7 @@ public enum PoolBuilder {
         // — unlike independent per-class half-coverage masks, which a tie could put in two.
         let labels = t.labels
         return try (0..<t.classCount).map { c in
+            try SpectroCancellation.check(cancelled)
             let mask = labels.map { $0 == c }
             let (_, report) = try MaskTransport.region(t, class: c)
             var partial = 0, edge = 0, retained = 0.0, pixels = 0
@@ -87,14 +90,17 @@ public enum PoolBuilder {
         }
     }
 
-    /// One pool for a region given as a 4D-grid mask (an object's pixels, a drawn rectangle).
+    /// One pool for a region given as a 4D-grid mask (an object's pixels, a drawn rectangle). `cancelled` is asked through the
+    /// transport and before the sum; true throws `SpectroCancelled` and nothing is returned.
     public static func pool(image: some SpectrumImage, scanMask: [Bool], registration: GridRegistration,
-                             name: String, kind: String, validation: String? = nil) throws -> PooledSpectrum {
-        let t = try MaskTransport.transport(mask: scanMask, registration: registration)
+                             name: String, kind: String, validation: String? = nil,
+                             cancelled: @Sendable () -> Bool = SpectroCancellation.task) throws -> PooledSpectrum {
+        let t = try MaskTransport.transport(mask: scanMask, registration: registration, cancelled: cancelled)
         guard t.width == image.nx, t.height == image.ny else {
             throw MaskTransportError(description: "The registration maps onto a \(t.width) x \(t.height) grid; the spectrum image is \(image.nx) x \(image.ny).")
         }
         let (mask, report) = try MaskTransport.region(t)
+        try SpectroCancellation.check(cancelled)
         return try pool(image: image, mask: mask, name: name, kind: kind, partialPixels: report.partialIncluded,
                     edgePixels: report.edgeIncluded, outsideFraction: report.outsideFraction,
                     footprintArea: report.footprintArea, retainedFraction: report.retainedFraction,
