@@ -57,18 +57,30 @@ package nonisolated struct ColumnMatrix: Sendable, Equatable {
     }
 
     package func times(_ x: [Double]) -> [Double] {
-        precondition(x.count == cols)
         var y = [Double](repeating: 0, count: rows)
+        times(x, into: &y)
+        return y
+    }
+
+    /// `times(x)` written into `y` (count `rows`), which is overwritten: the same additions in the same order, without a new array.
+    package func times(_ x: [Double], into y: inout [Double]) {
+        precondition(x.count == cols && y.count == rows)
+        for i in 0..<rows { y[i] = 0 }
         for j in 0..<cols where x[j] != 0 {
             let xj = x[j]
             for i in 0..<rows { y[i] += data[j * rows + i] * xj }
         }
-        return y
     }
 
     package func transposeTimes(_ v: [Double]) -> [Double] {
-        precondition(v.count == rows)
         var out = [Double](repeating: 0, count: cols)
+        transposeTimes(v, into: &out)
+        return out
+    }
+
+    /// `transposeTimes(v)` written into `out` (count `cols`), which is overwritten: the same sums, without a new array.
+    package func transposeTimes(_ v: [Double], into out: inout [Double]) {
+        precondition(v.count == rows && out.count == cols)
         let m = rows
         data.withUnsafeBufferPointer { d in v.withUnsafeBufferPointer { v in
             // Four columns at a time: each column's sum is still accumulated in row order from 0 (the same additions in the same order,
@@ -91,7 +103,26 @@ package nonisolated struct ColumnMatrix: Sendable, Equatable {
                 j += 1
             }
         } }
-        return out
+    }
+}
+
+/// The buffers of `FitLinearAlgebra.leastSquares(_:columns:_:solution:workspace:)`, made once for a design of `rows` x up to `maxCols`
+/// columns and reused by every solve on it (the NNLS active-set loop solves once per iteration, and allocating these each time
+/// was most of the EDS fit's transient memory: macEM#641, 5.35 GB of short-lived arrays per Auto ID). Not shared between threads.
+package nonisolated final class LeastSquaresWorkspace {
+    package let rows: Int
+    package let maxCols: Int
+    fileprivate var a: [Double]
+    fileprivate var b: [Double]
+    fileprivate var jpvt: [Int32]
+    fileprivate var work: [Double] = []
+
+    package init(rows: Int, maxCols: Int) {
+        precondition(rows >= 0 && maxCols >= 0)
+        self.rows = rows; self.maxCols = maxCols
+        a = [Double](repeating: 0, count: rows * maxCols)
+        b = [Double](repeating: 0, count: max(rows, maxCols))
+        jpvt = [Int32](repeating: 0, count: maxCols)
     }
 }
 
@@ -124,6 +155,40 @@ package nonisolated enum FitLinearAlgebra {
         var x = [Double](repeating: 0, count: n * nrhs)
         for c in 0..<nrhs { for i in 0..<n { x[c * n + i] = bBuf[c * ldb + i] } }
         return (ColumnMatrix(rows: n, cols: nrhs, data: x), Int(rank))
+    }
+
+    /// `leastSquares(a.selecting(js), y)` for one right-hand side, with the same LAPACK call on the same inputs (so the same bits), but
+    /// in `workspace`'s buffers: the columns are gathered there, and the solution (js.count values) is written to the front of
+    /// `solution`. False where `leastSquares` returns nil.
+    package static func leastSquares(_ a: ColumnMatrix, columns js: [Int], _ y: [Double], rcond: Double = 1e-12,
+                                     solution x: inout [Double], workspace ws: LeastSquaresWorkspace) -> Bool {
+        let m = a.rows, n = js.count
+        precondition(y.count == m && ws.rows == m && n <= ws.maxCols && x.count >= n)
+        if n == 0 { return true }
+        if m == 0 { for i in 0..<n { x[i] = 0 }; return true }
+        a.data.withUnsafeBufferPointer { src in ws.a.withUnsafeMutableBufferPointer { dst in
+            for (c, j) in js.enumerated() {
+                precondition(j >= 0 && j < a.cols)
+                (dst.baseAddress! + c * m).update(from: src.baseAddress! + j * m, count: m)
+            }
+        } }
+        // The right-hand side and the pivots are inputs to dgelsy_: set exactly as a fresh solve has them (zeros past m, no
+        // pinned column). The work array is output only.
+        let ldb = max(m, n)
+        for i in 0..<m { ws.b[i] = y[i] }
+        for i in m..<ldb { ws.b[i] = 0 }
+        for i in 0..<n { ws.jpvt[i] = 0 }
+        let mm = Int32(m), nn = Int32(n), lda = Int32(m), ldbb = Int32(ldb)
+        var rank = Int32(0)
+        var query = 0.0
+        var info = sk_dgelsy(mm, nn, 1, &ws.a, lda, &ws.b, ldbb, &ws.jpvt, rcond, &rank, &query, -1)
+        guard info == 0, query.isFinite, query >= 1 else { return false }
+        let lwork = Int32(query)
+        if ws.work.count < Int(lwork) { ws.work = [Double](repeating: 0, count: Int(lwork)) }
+        info = sk_dgelsy(mm, nn, 1, &ws.a, lda, &ws.b, ldbb, &ws.jpvt, rcond, &rank, &ws.work, lwork)
+        guard info == 0 else { return false }
+        for i in 0..<n { x[i] = ws.b[i] }
+        return true
     }
 
     /// `(A^T A)^-1` for a full-column-rank `A` (m x k, m >= k), as `R^-1 R^-T` from the QR factorisation
