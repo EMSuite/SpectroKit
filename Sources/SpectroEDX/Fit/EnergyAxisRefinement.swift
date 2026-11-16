@@ -125,6 +125,8 @@ package nonisolated enum EnergyAxisRefinement {
                                                       resolutionMnKaEV: fileResolutionMnKaEV, escapePeaks: settings.escapePeaks,
                                                       lineTail: settings.lineTail, lineWeights: settings.lineWeights))
 
+        // The channel range is fixed on the file axis, so the data are the same for every trial.
+        let y = channels.map { counts[$0] }
         // Units: u0 = offset shift / 1 eV, u1 = gain shift / 1e-4, u2 = (R - R_file) / 1 eV.
         func rss(_ u: [Double]) -> Double {
             let d = (options.refineOffset ? u[0] : 0) * 1e-3
@@ -141,7 +143,6 @@ package nonisolated enum EnergyAxisRefinement {
             let design = LinearDesign.build(model: model, axis: axis, channels: channels,
                                             background: settings.background, shapes: settings.referenceShapes,
                                             counts: counts)
-            let y = channels.map { counts[$0] }
             let target = (0..<y.count).map { y[$0] - design.offset[$0] }
             let s = LeastSquaresFit.solve(nonNegative: design.nonNegative, free: design.free, y: target)
             var mu = design.nonNegative.times(s.nonNegative)

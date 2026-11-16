@@ -64,7 +64,8 @@ package nonisolated enum LeastSquaresFit {
         }
 
         // Eliminate the free block.
-        var work = scaled.selecting(active)
+        // Every column active (the usual case) needs no second copy of the design.
+        var work = active.count == n.cols ? scaled : scaled.selecting(active)
         var target = yW
         // A free block the solver cannot answer, or a NaN in the data, is not a converged fit (it used to report converged zeros).
         var answered = yW.allSatisfy(\.isFinite)
@@ -100,6 +101,10 @@ package nonisolated enum LeastSquaresFit {
     }
 
     /// Algorithm 23.10 on unit-norm columns. Returns the solution on those columns.
+    ///
+    /// Every buffer of the loop (gradient, model, passive index list, passive solution and the LAPACK workspace) is made once here
+    /// and reused by each iteration (macEM#641: allocating them per iteration made 5.35 GB of transient arrays per EDS Auto ID).
+    /// The arithmetic is unchanged: the same passive columns go to the same `dgelsy_` call in the same order.
     private static func lawsonHanson(_ a: ColumnMatrix, _ y: [Double]) -> ([Double], Int, Bool) {
         let m = a.rows, n = a.cols
         var x = [Double](repeating: 0, count: n)
@@ -108,13 +113,19 @@ package nonisolated enum LeastSquaresFit {
         let yNorm = y.reduce(0) { $0 + $1 * $1 }.squareRoot()
         let tol = 1e-12 * max(yNorm, 1e-300)
         var residual = y
+        var w = [Double](repeating: 0, count: n)
+        var ax = [Double](repeating: 0, count: m)
+        var idx: [Int] = []
+        idx.reserveCapacity(n)
+        var s = [Double](repeating: 0, count: n)
+        let workspace = LeastSquaresWorkspace(rows: m, maxCols: n)
         var outer = 0
         let maxOuter = 3 * n + 100
         var converged = false
         while outer < maxOuter {
             outer += 1
             // Gradient on the zero set.
-            let w = a.transposeTimes(residual)
+            a.transposeTimes(residual, into: &w)
             var t = -1; var best = tol
             for j in 0..<n where !passive[j] && w[j] > best { best = w[j]; t = j }
             if t < 0 { converged = true; break }
@@ -123,25 +134,29 @@ package nonisolated enum LeastSquaresFit {
             var guardInner = 0
             while guardInner < 3 * n + 10 {
                 guardInner += 1
-                let idx = (0..<n).filter { passive[$0] }
-                guard let (s, _) = FitLinearAlgebra.leastSquares(a.selecting(idx), ColumnMatrix(rows: m, cols: 1, data: y)) else {
+                idx.removeAll(keepingCapacity: true)
+                for j in 0..<n where passive[j] { idx.append(j) }
+                let k = idx.count
+                guard FitLinearAlgebra.leastSquares(a, columns: idx, y, solution: &s, workspace: workspace) else {
                     passive[t] = false; break
                 }
-                if s.data.allSatisfy({ $0 > 0 }) {
-                    for (k, j) in idx.enumerated() { x[j] = s.data[k] }
+                var allPositive = true
+                for c in 0..<k where !(s[c] > 0) { allPositive = false; break }
+                if allPositive {
+                    for (c, j) in idx.enumerated() { x[j] = s[c] }
                     break
                 }
                 // Step towards s as far as feasibility allows.
                 var alpha = Double.infinity
-                for (k, j) in idx.enumerated() where s.data[k] <= 0 {
-                    let denom = x[j] - s.data[k]
+                for (c, j) in idx.enumerated() where s[c] <= 0 {
+                    let denom = x[j] - s[c]
                     if denom > 0 { alpha = min(alpha, x[j] / denom) }
                 }
                 if !alpha.isFinite { alpha = 0 }
-                for (k, j) in idx.enumerated() { x[j] += alpha * (s.data[k] - x[j]) }
+                for (c, j) in idx.enumerated() { x[j] += alpha * (s[c] - x[j]) }
                 for j in idx where x[j] <= 1e-14 { x[j] = 0; passive[j] = false }
             }
-            let ax = a.times(x)
+            a.times(x, into: &ax)
             for i in 0..<m { residual[i] = y[i] - ax[i] }
         }
         return (x, outer, converged)
