@@ -8,6 +8,19 @@ each entry from the merged pull requests' titles; a breaking change's Migration 
 Every quantification and thickness result reports `validation: "none"`: agreement with exSpy and HyperSpy is not validation on a
 sample of known composition.
 
+## [0.15.0](https://github.com/macEMSuite/SpectroKit/compare/0.14.3...0.15.0) (2026-11-16)
+
+
+### Features
+
+* the remaining long SpectroKit calls stop on cancel ([#119](https://github.com/macEMSuite/SpectroKit/issues/119)) ([0f1a1ac](https://github.com/macEMSuite/SpectroKit/commit/0f1a1acbd45841b632bda973269bee58f1d30d90))
+
+
+### Performance Improvements
+
+* the EDS fit's NNLS loop reuses its buffers instead of allocating every iteration ([#122](https://github.com/macEMSuite/SpectroKit/issues/122)) ([4c04958](https://github.com/macEMSuite/SpectroKit/commit/4c04958eb52d1b419b068f36a645cb4b6537f4aa))
+* the EDS fit's NNLS loop reuses its buffers instead of allocating them every iteration ([4c04958](https://github.com/macEMSuite/SpectroKit/commit/4c04958eb52d1b419b068f36a645cb4b6537f4aa))
+
 ## [0.14.3](https://github.com/macEMSuite/SpectroKit/compare/0.14.2...0.14.3) (2026-11-15)
 
 
