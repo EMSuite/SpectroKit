@@ -1,7 +1,7 @@
 //
 //  CoreTrapRefusalTests.swift
 //  Role: a NaN or an out-of-range value reaching SpectroCore gives NaN (as scipy does), a refusal or an invalid kernel, never a trap
-//        (macEMSuite/SpectroKit#103). One test per site the review named.
+//        (EMSuite/SpectroKit#103). One test per site the review named.
 //  Red before: `precondition` in `CountingInterval.garwood`, `NetCounts.init`, `IncompleteGamma`; a Gaussian radius from a decoded
 //  sigma of 1e300 overflowed `Int`; `Int32(p)` past 2^31 spectrum pixels; a file's counts that do not fill its box trapped in
 //  `DenseSpectrumImage`.
