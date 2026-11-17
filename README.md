@@ -3,7 +3,7 @@
 # SpectroKit
 
 [![CI](https://github.com/EMSuite/SpectroKit/actions/workflows/ci.yml/badge.svg)](https://github.com/EMSuite/SpectroKit/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/tag/mac4DSTEM/SpectroKit?label=release)](https://github.com/EMSuite/SpectroKit/tags)
+[![Release](https://img.shields.io/github/v/tag/EMSuite/SpectroKit?label=release)](https://github.com/EMSuite/SpectroKit/tags)
 [![Docs](https://img.shields.io/badge/docs-DocC-blue)](https://emsuite.github.io/SpectroKit/documentation/)
 [![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue)](LICENSE)
 
