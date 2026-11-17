@@ -1,7 +1,7 @@
 //
 //  EELSTrapRefusalTests.swift
 //  Role: a NaN window, an overflowing size or a too-short spectrum reaching SpectroEELS gives no channel or a refusal, never a trap
-//        (macEMSuite/SpectroKit#103). One test per site the review named.
+//        (EMSuite/SpectroKit#103). One test per site the review named.
 //  Red before: `Int(NaN)` on a dragged background window; a reversed `ClosedRange` from a gap wider than the window; `n + extension` and
 //  `c + offset` overflowed; a Savitzky-Golay window longer than the spectrum trapped in `precondition`.
 //

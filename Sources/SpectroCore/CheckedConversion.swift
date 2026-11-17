@@ -4,7 +4,7 @@
 //
 //  The conversions from a Double that trap on NaN, infinity or a value out of range (`Int(_:)`), made total, and the JSON encoder
 //  that cannot throw on a non-finite Double. A NaN from a caller's or a file's number is refused or skipped by the caller in words,
-//  never a crash (macEMSuite/SpectroKit#103).
+//  never a crash (EMSuite/SpectroKit#103).
 //
 
 import Foundation

@@ -1,7 +1,7 @@
 //
 //  TrapRefusalTests.swift
 //  Role: a NaN, an out-of-range channel, a damaged saved setting or an overflowing size reaching the EDX code gives a refusal, an
-//        empty result or a written NaN, never a trap (macEMSuite/SpectroKit#103). One test per site the review named.
+//        empty result or a written NaN, never a trap (EMSuite/SpectroKit#103). One test per site the review named.
 //  Red before: `try!` on JSONEncoder trapped on a NaN field; `0...order` on a negative order; a continuum precondition on a bad policy;
 //  a channel range past the spectrum indexed out of range; a decoded tail with slope 0 gave infinite columns; `Int(NaN)` in the
 //  proposer widths, the polygon bounds and the grouped count; `rows * columns` overflowed before validation.
