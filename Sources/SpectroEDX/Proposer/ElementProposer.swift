@@ -77,10 +77,9 @@ public nonisolated struct ElementCandidate: Equatable, Sendable {
     public var aboveCriticalLevel: Bool { net > criticalLevel }
     public var isProposed: Bool { aboveDetectionLimit && familyNote == nil && possibleReason == nil }
     public var hasSumPeakQuestion: Bool { conflicts.contains { $0.kind == .sumPeak } }
-    /// Carbon measured below the default lowest tested line (`ElementProposer.measuredBelowFloor`, #124) and not proposed: possible only.
-    package var measuredBelowFloor: Bool {
-        !isProposed && ElementProposer.measuredBelowFloor.contains(element) && energyKeV < ProposerPolicy.default.minimumLineEnergyKeV
-    }
+    /// Measured below the run's lowest tested line (carbon, `ElementProposer.measuredBelowFloor`, #124): possible only, and left out of the
+    /// unlisted-line check. Set by the proposer; false for every other candidate.
+    package var measuredBelowFloor = false
     /// How many detection limits the net is (the order in which to show candidates).
     public var significance: Double { net / detectionLimit }
 
@@ -741,7 +740,7 @@ public nonisolated struct ElementProposer: Sendable {
         }
         var candidates: [ElementCandidate] = []
         func append(_ el: String, group: String, stat st: Stat, familyNote: String? = nil, possibleReason: String? = nil,
-                    unconfirmable: Bool = false, explainedBySumPeak: String? = nil) throws {
+                    unconfirmable: Bool = false, explainedBySumPeak: String? = nil, belowFloor: Bool = false) throws {
             let alpha = XRayLines.line(group)?.energy ?? 0
             var note: String?
             if context.gridElements.contains(el) {
@@ -757,11 +756,13 @@ public nonisolated struct ElementProposer: Sendable {
                 } else { note = el == "Cu" ? "No hole region available: Cu grid and Q phase cannot be separated."
                                               : "No hole region available: \(el) from the grid and from the sample cannot be separated." }
             }
-            candidates.append(ElementCandidate(
+            var c = ElementCandidate(
                 element: el, group: group, energyKeV: alpha, net: st.net, sigma: st.sigma, sigmaZero: st.sigmaZero,
                 criticalLevel: st.lc, detectionLimit: st.ld, conflicts: conflicts(el, group, alpha, st.net),
                 suggestedRole: context.quantifyByDefault.contains(el) ? .quantify : .fitOnly, holeRegionNote: note, misfit: 1,
-                familyNote: familyNote, possibleReason: possibleReason, unconfirmable: unconfirmable, explainedBySumPeak: explainedBySumPeak))
+                familyNote: familyNote, possibleReason: possibleReason, unconfirmable: unconfirmable, explainedBySumPeak: explainedBySumPeak)
+            c.measuredBelowFloor = belowFloor
+            candidates.append(c)
         }
         /// The numbers of a group whose limit cannot be stated: its area, no limit (never proposed).
         func unstated(_ p: Pass, _ gi: Int) -> Stat { Stat(net: p.result.values[gi], sigma: 0, sigmaZero: 0, lc: .infinity, ld: .infinity) }
@@ -813,7 +814,7 @@ public nonisolated struct ElementProposer: Sendable {
             if let st = f.trial.stat { try append(f.element, group: f.trial.group, stat: st, possibleReason: f.trial.reason) }
         }
         for f in belowFloorFinds where !candidates.contains(where: { $0.element == f.element }) {
-            try append(f.element, group: f.group, stat: f.stat, possibleReason: f.reason)
+            try append(f.element, group: f.group, stat: f.stat, possibleReason: f.reason, belowFloor: true)
         }
         candidates.sort { $0.significance > $1.significance }
 
