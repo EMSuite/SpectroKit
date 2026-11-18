@@ -185,7 +185,7 @@ public nonisolated struct ElementProposer: Sendable {
     package var overlapCheck = false
 
     /// Elements whose alpha line lies below `minimumLineEnergyKeV` but which are still measured (once, with the settled model) and reported as
-    /// possible, never proposed (#124): carbon, which most TEM spectra carry as coating or contamination.
+    /// possible, never proposed (#124): carbon, which the analyst then judges (sample, coating or contamination).
     package static let measuredBelowFloor: Set<String> = ["C"]
 
     /// Elements the line table lists that no spectrum of a material shows or that the app has no use for:
@@ -388,7 +388,7 @@ public nonisolated struct ElementProposer: Sendable {
                 && g.lines[0].energy <= hi - rangeMarginFWHM * g.lines[0].fwhm
         }
         // Below the floor, carbon only (#124): its K alpha group is measured once with the settled model and shown as possible, never proposed
-        // and never refused, when the fitted range holds it. Velox and AZtec show C; it is coating or contamination as often as sample.
+        // and never refused, when the fitted range holds it. Velox and AZtec show C; the analyst decides what it is.
         let belowFloorGroups = base.groups.filter { g in
             Self.measuredBelowFloor.contains(g.element) && poolElements.contains(g.element) && !poolGroups.contains(where: { $0.element == g.element })
                 && g.lines[0].energy < minimumLineEnergyKeV
@@ -701,8 +701,8 @@ public nonisolated struct ElementProposer: Sendable {
             let gs = p.model.groups.enumerated().filter { $0.element.element == el }.compactMap { gi, g in stat(p, gi).map { (g.id, $0) } }
             guard let (gid, st) = gs.max(by: { $0.1.significance < $1.1.significance }), st.net >= st.ld else { continue }
             let e = XRayLines.line(gid)?.energy ?? groups[0].lines[0].energy
-            let reason = String(format: "Below %.2f keV: coating or contamination? Its %@ (%.2f keV) lies below the lowest line Auto ID adds, so it is measured (area %.0f at or above its detection limit %.0f) and shown, never proposed.",
-                                minimumLineEnergyKeV, Self.lineLabel(gid), e, st.net, st.ld)
+            let reason = String(format: "Its %@ (%.2f keV) lies below %.2f keV, the lowest line Auto ID adds, so it is measured (area %.0f at or above its detection limit %.0f) and shown, never added.",
+                                Self.lineLabel(gid), e, minimumLineEnergyKeV, st.net, st.ld)
             belowFloorFinds.append((el, gid, st, reason))
         }
 

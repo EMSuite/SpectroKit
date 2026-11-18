@@ -51,7 +51,7 @@ struct NearMissTests {
         let c = try #require(Self.candidate(r, "C"), "C is measured below the floor")
         #expect(c.group == "C_Ka" && c.aboveDetectionLimit, "C net \(c.net) L_D \(c.detectionLimit)")
         #expect(r.possible.contains(c) && !c.isProposed && !r.proposed.contains(c) && !r.sumPeakQuestions.contains(c))
-        #expect(c.possibleReason?.hasPrefix("Below 0.45 keV: coating or contamination?") == true, "\(c.possibleReason ?? "nil")")
+        #expect(c.possibleReason?.hasPrefix("Its K\u{03B1} (0.28 keV) lies below 0.45 keV, the lowest line Auto ID adds") == true, "\(c.possibleReason ?? "nil")")
         #expect(!r.refused.contains { $0.element == "C" })
         // The unlisted-line check leaves it out, as before it was measured.
         #expect(c.measuredBelowFloor)
