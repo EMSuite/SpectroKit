@@ -319,10 +319,12 @@ struct SpectroscopyProposerTests {
         #expect(r.refused.first { $0.element == "Be" }!.reason.contains("absorbed in its window"))
         // 0.11.0: only an element with a residual peak is a candidate, so Mg and Si need not appear; a refused one never does.
         #expect(Set(r.candidates.map(\.element)).isSubset(of: ["Mg", "Si"]), "a refused element is never a candidate")
-        // The default pool's refusals are reported too, with C and N (lines below the lowest tested energy) named separately.
+        // The default pool's refusals are reported too, with N (a line below the lowest tested energy) named separately. C is not refused
+        // since #124: it is measured below the floor and, at most, possible.
         let d = try ElementProposer().propose(counts: counts, axis: Self.axis, settings: Self.settings(["Al"]))
-        #expect(Set(d.refused.map(\.element)).isSuperset(of: ["H", "He", "Li", "Be", "C", "N"]))
-        #expect(d.refused.first { $0.element == "C" }!.reason.contains("lowest tested line"))
+        #expect(Set(d.refused.map(\.element)).isSuperset(of: ["H", "He", "Li", "Be", "N"]))
+        #expect(d.refused.first { $0.element == "N" }!.reason.contains("lowest tested line"))
+        #expect(!d.refused.contains { $0.element == "C" } && !d.proposed.contains { $0.element == "C" })
     }
 
     /// Cu defaults to Quantify and names the grid-or-Q question; the hole spectrum answers it.

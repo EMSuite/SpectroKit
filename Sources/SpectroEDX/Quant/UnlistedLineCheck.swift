@@ -251,7 +251,9 @@ public nonisolated enum UnlistedLineChecker {
         let dismissed = Set(q.method.elements.filter { $0.role == .off }.map(\.symbol))
         // Everything at or above L_D: proposed, sum-peak questions and the candidates the family rule withheld alike (an excess beside a listed line is an
         // excess whatever its name), strongest first.
-        let found = proposal.candidates.filter { $0.aboveDetectionLimit && !dismissed.contains($0.element) }
+        // Carbon that Auto ID measured below its lowest tested line (#124) is shown there as possible only; it is not an unlisted line here,
+        // as before it was measured.
+        let found = proposal.candidates.filter { $0.aboveDetectionLimit && !dismissed.contains($0.element) && !$0.measuredBelowFloor }
 
         // Beside a listed line or a split edge: an unexplained excess, not an element (A2). Listed = the reported fit's own list,
         // axis and width; nets from the fit's group values.

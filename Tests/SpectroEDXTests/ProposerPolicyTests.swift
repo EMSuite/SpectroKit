@@ -149,8 +149,10 @@ struct ProposerPolicyTests {
         let carbon = Self.expected(areas: ["Al_Ka": 9000, "C_Ka": 3000], dose: 10)
         let low = try Self.propose(carbon, policy: ProposerPolicy(minimumLineEnergyKeV: 0.2))
         let normal = try Self.propose(carbon)
-        #expect(Self.candidate(low, "C") != nil && Self.candidate(normal, "C") == nil)
-        #expect(normal.refused.contains { $0.element == "C" })
+        #expect(Self.candidate(low, "C")?.measuredBelowFloor == false, "with the floor at 0.2 keV C is tested by the loop, not below the floor")
+        // #124: at the default floor C is measured and shown as possible, never proposed and no longer refused (`NearMissTests`).
+        let c = try #require(Self.candidate(normal, "C"))
+        #expect(c.measuredBelowFloor && !c.isProposed && normal.possible.contains(c) && !normal.refused.contains { $0.element == "C" })
     }
 
     // MARK: U1 - U3 the unlisted-line check
