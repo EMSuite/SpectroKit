@@ -685,7 +685,7 @@ whole.csv-fnv = 2386ee1d8a1aef5f
 whole.rangeSensitivity = nil
 whole.unlistedProposal.candidates: n 0 sum 0000000000000000 0 fnv cbf29ce484222325
 whole.unlistedProposal.sumPeaks: n 0 sum 0000000000000000 0 fnv cbf29ce484222325
-whole.unlistedProposal.refused: array 7
+whole.unlistedProposal.refused: array 6
 whole.unlistedProposal.refused[0].element = "H"
 whole.unlistedProposal.refused[0].reason = "H has no characteristic X-ray line: it cannot be detected by EDX."
 whole.unlistedProposal.refused[1].element = "He"
@@ -696,21 +696,19 @@ whole.unlistedProposal.refused[3].element = "Be"
 whole.unlistedProposal.refused[3].reason = "Be K (about 109 eV) lies below the detector's energy range and is absorbed in its window; it cannot be quantified by EDX."
 whole.unlistedProposal.refused[4].element = "B"
 whole.unlistedProposal.refused[4].reason = "Its line at 0.18 keV lies below the proposer's lowest tested line (0.45 keV): under the detector window the continuum is too model-dependent for a net area to be trusted. List it by hand if you know it is there."
-whole.unlistedProposal.refused[5].element = "C"
-whole.unlistedProposal.refused[5].reason = "Its line at 0.28 keV lies below the proposer's lowest tested line (0.45 keV): under the detector window the continuum is too model-dependent for a net area to be trusted. List it by hand if you know it is there."
-whole.unlistedProposal.refused[6].element = "N"
-whole.unlistedProposal.refused[6].reason = "Its line at 0.39 keV lies below the proposer's lowest tested line (0.45 keV): under the detector window the continuum is too model-dependent for a net area to be trusted. List it by hand if you know it is there."
+whole.unlistedProposal.refused[5].element = "N"
+whole.unlistedProposal.refused[5].reason = "Its line at 0.39 keV lies below the proposer's lowest tested line (0.45 keV): under the detector window the continuum is too model-dependent for a net area to be trusted. List it by hand if you know it is there."
 whole.unlistedProposal.currie.alpha = 3fa999999999999a 0.050000000000000003
 whole.unlistedProposal.currie.beta = 3fa999999999999a 0.050000000000000003
 whole.unlistedProposal.notes: array 7
-whole.unlistedProposal.notes[0] = "Lines below 0.45 keV are not tested (a measured limit of the continuum model, not a property of the method)."
+whole.unlistedProposal.notes[0] = "Lines below 0.45 keV are not tested (a measured limit of the continuum model, not a property of the method); C Kα is measured with the final model and shown as possible only, never proposed."
 whole.unlistedProposal.notes[1] = "Identification: the residual's peaks at or above 5 σ of its top-hat filter (1.5 × below 1 keV); a candidate joins when Σ(y − μ)²/(μ + (0.01 μ)²) falls by at least 100, 20 % of that at its own lines, with its area at or above Currie L_D (α = β = 0.05, σ₀ from the fit's own variance with it absent) and no line against it; the final fit drops what it does not need (100). Kβ weights from NIST EPQ in this fit."
-whole.unlistedProposal.notes[2] = "Fit: least squares, weighted by 1/(y + (0.01 y)²) to decide, least squares, unweighted for the numbers shown; continuum: Kramers×Bernstein(9,5), split at 1.5596 keV (step broadened by the detector resolution); orders chosen on synthetic data; escape peaks: fitted for 2 line groups above the Si K edge (1.839 keV); reference shapes: none; 0 residual peaks examined, 0 candidate fits, 2 fits in all."
+whole.unlistedProposal.notes[2] = "Fit: least squares, weighted by 1/(y + (0.01 y)²) to decide, least squares, unweighted for the numbers shown; continuum: Kramers×Bernstein(9,5), split at 1.5596 keV (step broadened by the detector resolution); orders chosen on synthetic data; escape peaks: fitted for 2 line groups above the Si K edge (1.839 keV); reference shapes: none; 0 residual peaks examined, 1 candidate fits, 3 fits in all."
 whole.unlistedProposal.notes[3] = "Confirmation lines: an element nominated by an L or M line needs its K or L alpha line at 3 σ in the residual where the fitted range holds it and the beam is at least 2.0 times its energy; otherwise it is withheld."
 whole.unlistedProposal.notes[4] = "Background check: data over model 0.59 off the lines in 1.0 to 2.5 keV (0.80 to 1.25 is healthy); a find there is only possible."
-whole.unlistedProposal.notes[5] = "Look-elsewhere: 0 candidates were tested, so about 0.00 chance passes of the area bar alone are expected; the gain and confirmation bars stand beside it."
+whole.unlistedProposal.notes[5] = "Look-elsewhere: 1 candidates were tested, so about 0.00 chance passes of the area bar alone are expected; the gain and confirmation bars stand beside it."
 whole.unlistedProposal.notes[6] = "a weak line next to Al Kα reads low by ≈ 300 counts per pooled spectrum on synthetic data (cause: the Al Kα incomplete-charge tail, unmodelled until a tail is measured on an Al matrix, `TailEstimate`); unmeasured on real data. Weak-line bias measured on synthetic data: Δ = −270 ± 31 counts at 900 planted Mg Kα (generator A, no tail: continuum–line projection) and −272 ± 23 at 882 (generator S); −325 ± 38 at 3000 (A) and −226 ± 22 at 2899 (S)"
-whole.unlistedProposal.passes = 2
+whole.unlistedProposal.passes = 3
 whole.unlistedProposal.settled = true
 whole.unlistedProposal.reducedChiSquared = 3fd88696d3af7cf8 0.38321467087185068
 whole.unlistedCheck.candidates: n 0 sum 0000000000000000 0 fnv cbf29ce484222325
