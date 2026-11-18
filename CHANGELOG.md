@@ -8,6 +8,13 @@ each entry from the merged pull requests' titles; a breaking change's Migration 
 Every quantification and thickness result reports `validation: "none"`: agreement with exSpy and HyperSpy is not validation on a
 sample of known composition.
 
+## [0.16.0](https://github.com/EMSuite/SpectroKit/compare/0.15.0...0.16.0) (2026-11-18)
+
+
+### Features
+
+* Auto ID shows carbon below 0.45 keV and a sum-peak question its own L line answers as possible ([#125](https://github.com/EMSuite/SpectroKit/issues/125)) ([936d46a](https://github.com/EMSuite/SpectroKit/commit/936d46ae1d7631b7b3dfe089c68f3bd58265dc19))
+
 ## [0.15.0](https://github.com/macEMSuite/SpectroKit/compare/0.14.3...0.15.0) (2026-11-16)
 
 
