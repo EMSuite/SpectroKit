@@ -5,7 +5,8 @@ exSpy 0.3.2 / 7185a4d1. macOS 15 and later (iOS was dropped from `Package.swift`
 
 Live:
 - **EDX**: the line table, element identification (the published identification loop, `ElementProposer`, which refines the energy
-  axis on its own K picks; the opt-in downward confirmation rule and the uncorroborated tier), net counts, the EDS fit with
+  axis on its own K picks; the opt-in downward confirmation rule and the uncorroborated tier; carbon below 0.45 keV and a sum-peak
+  question that another line answers are shown as possible, never added), net counts, the EDS fit with
   escape peaks and, by default where the data support them, sum peaks; the continuum step at absorption edges broadened by the
   detector by default, an optional Si dead-layer term, the opt-in NIST EPQ line weights; Cliff-Lorimer, zeta and cross-section
   quantification with the absorption iteration, per pixel over a spectrum image, k-factor import, sigma on wt% and at% (with

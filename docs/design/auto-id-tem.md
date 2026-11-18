@@ -93,6 +93,13 @@ flank-misfit factor, which multiplied a neighbour's detection limit by the misfi
 - **Tiers on the result.** A strong element is proposed; a possible one is a candidate with a `possibleReason` (one sentence
   with the numbers) and is never proposed. `ElementCandidate.isProposed` becomes net ≥ L_D, no family note and no possible
   reason. Additive public API.
+- **Near misses are shown, never added (SpectroKit#124, 2026-11-18).** Two cases the loop held back now reach `possible`, so a
+  consumer can show them with a one-click Add; neither is ever proposed. Carbon below the 0.45 keV floor is measured once with
+  the settled model (the standard fit) when the fitted range holds C Kα, and is possible when its area reaches L_D ("coating or
+  contamination?"); it is no longer refused, and it never joins the model, so no other number moves. A found element held as a
+  sum-peak question whose other line family stands at or above L_D away from every pile-up energy (Ga Lα at 1.098 keV beside a
+  Ga Kα on the Cu+Ge or Ni+Si sum) is possible with that reason instead of a bare question; the sum-peak conflict stays on it.
+  The gain bar of 100 is unchanged: Mg beside Al that gains 81 stays possible with its reason, as before.
 
 ## 5. What the first runs changed (2026-10-23, measured)
 

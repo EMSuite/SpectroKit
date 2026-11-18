@@ -20,6 +20,8 @@
 //   where the background is healthy (data over model 0.8 to 1.25 off the lines) is proposed; every other found or tested element is a
 //   candidate with `possibleReason` (or `familyNote` for the confirmation rule) and is never proposed. A candidate whose peak went to a
 //   pile-up column that the final fit keeps at or above its L_D is explained (`explainedBySumPeak`), not possible.
+//   Near misses (#124), possible and never proposed: carbon below `minimumLineEnergyKeV`, measured once with the settled model and kept
+//   when its area reaches L_D; a found element on a pile-up energy whose other line family stands at or above L_D off every pile-up energy.
 //
 //  What went (0.11.0): the all-candidate joint fit with its L_C pruning and single-candidate forward step, and the flank-misfit factor that
 //  scaled a candidate's sigma_0 by its neighbour's misfit (x33 for Mg beside Al on a measured Al-alloy map, where Mg's own window fitted to
@@ -75,6 +77,10 @@ public nonisolated struct ElementCandidate: Equatable, Sendable {
     public var aboveCriticalLevel: Bool { net > criticalLevel }
     public var isProposed: Bool { aboveDetectionLimit && familyNote == nil && possibleReason == nil }
     public var hasSumPeakQuestion: Bool { conflicts.contains { $0.kind == .sumPeak } }
+    /// Carbon measured below the default lowest tested line (`ElementProposer.measuredBelowFloor`, #124) and not proposed: possible only.
+    package var measuredBelowFloor: Bool {
+        !isProposed && ElementProposer.measuredBelowFloor.contains(element) && energyKeV < ProposerPolicy.default.minimumLineEnergyKeV
+    }
     /// How many detection limits the net is (the order in which to show candidates).
     public var significance: Double { net / detectionLimit }
 
@@ -178,6 +184,10 @@ public nonisolated struct ElementProposer: Sendable {
     package var sumPeakFraction = 1.0
     /// The overlap check, see `ProposerPolicy.overlapCheck`.
     package var overlapCheck = false
+
+    /// Elements whose alpha line lies below `minimumLineEnergyKeV` but which are still measured (once, with the settled model) and reported as
+    /// possible, never proposed (#124): carbon, which most TEM spectra carry as coating or contamination.
+    package static let measuredBelowFloor: Set<String> = ["C"]
 
     /// Elements the line table lists that no spectrum of a material shows or that the app has no use for:
     /// radioactive or absent from the table (Tc, Pm and everything from Po up, as the field's auto IDs stop at Bi), noble gases other than Ar
@@ -378,7 +388,14 @@ public nonisolated struct ElementProposer: Sendable {
             poolElements.contains(g.element) && g.lines[0].energy >= max(lo + rangeMarginFWHM * g.lines[0].fwhm, minimumLineEnergyKeV)
                 && g.lines[0].energy <= hi - rangeMarginFWHM * g.lines[0].fwhm
         }
-        for el in poolElements where !poolGroups.contains(where: { $0.element == el }) {
+        // Below the floor, carbon only (#124): its K alpha group is measured once with the settled model and shown as possible, never proposed
+        // and never refused, when the fitted range holds it. Velox and AZtec show C; it is coating or contamination as often as sample.
+        let belowFloorGroups = base.groups.filter { g in
+            Self.measuredBelowFloor.contains(g.element) && poolElements.contains(g.element) && !poolGroups.contains(where: { $0.element == g.element })
+                && g.lines[0].energy < minimumLineEnergyKeV
+                && g.lines[0].energy >= lo + rangeMarginFWHM * g.lines[0].fwhm && g.lines[0].energy <= hi - rangeMarginFWHM * g.lines[0].fwhm
+        }
+        for el in poolElements where !poolGroups.contains(where: { $0.element == el }) && !belowFloorGroups.contains(where: { $0.element == el }) {
             if let low = base.groups.filter({ $0.element == el && $0.lines[0].energy < minimumLineEnergyKeV }).map({ $0.lines[0].energy }).max() {
                 refused.append((el, String(format: "Its line at %.2f keV lies below the proposer's lowest tested line (%.2f keV): under the detector window the continuum is too model-dependent for a net area to be trusted. List it by hand if you know it is there.", low, minimumLineEnergyKeV)))
             }
@@ -672,6 +689,24 @@ public nonisolated struct ElementProposer: Sendable {
             }
         }
 
+        // Below the floor (carbon): one fit with the settled model, the standard (unweighted) fit as for the reported numbers; possible
+        // only when its area reaches L_D. It never joins the model, so nothing else in the result moves.
+        var belowFloorFinds: [(element: String, group: String, stat: Stat, reason: String)] = []
+        for el in Self.measuredBelowFloor.sorted() {
+            let groups = belowFloorGroups.filter { $0.element == el }
+            guard !groups.isEmpty else { continue }
+            if cancelled() { throw ProposerError.cancelled }
+            guard let p = try? Self.fitPass(groups: model + groups, data: counts, settings: s, axis: axis, channels: channels, dropped: dropped,
+                                            relative: t.relativeModelTerm, widths: widths, weighted: false, explained: explained) else { failedFits += 1; continue }
+            fitsDone += 1; tested += 1
+            let gs = p.model.groups.enumerated().filter { $0.element.element == el }.compactMap { gi, g in stat(p, gi).map { (g.id, $0) } }
+            guard let (gid, st) = gs.max(by: { $0.1.significance < $1.1.significance }), st.net >= st.ld else { continue }
+            let e = XRayLines.line(gid)?.energy ?? groups[0].lines[0].energy
+            let reason = String(format: "Below %.2f keV: coating or contamination? Its %@ (%.2f keV) lies below the lowest line Auto ID adds, so it is measured (area %.0f at or above its detection limit %.0f) and shown, never proposed.",
+                                minimumLineEnergyKeV, Self.lineLabel(gid), e, st.net, st.ld)
+            belowFloorFinds.append((el, gid, st, reason))
+        }
+
         // Background health in bands, off the modelled lines: data over model within 0.8 to 1.25.
         let onLines = near(model)
         var unhealthy: [(lo: Double, hi: Double, ratio: Double)] = []
@@ -750,6 +785,17 @@ public nonisolated struct ElementProposer: Sendable {
                 reason = String(format: "It joined on the identification fit, but in the standard fit its area %.0f is below its detection limit %.0f.", st.net, st.ld)
             } else if let band = unhealthy.first(where: { f.peakKeV >= $0.lo && f.peakKeV < $0.hi }) {
                 reason = String(format: "Its peak (%.3f keV) lies where the background is off (data over model %.2f in %.1f to %.1f keV).", f.peakKeV, band.ratio, band.lo, band.hi)
+            } else if let sum = conflicts(el, g.id, XRayLines.line(g.id)?.energy ?? 0, st.net).first(where: { $0.kind == .sumPeak }),
+                      let (o, os) = gs.filter({ o, os in
+                          o.id != g.id && os.net >= os.ld
+                              && !conflicts(el, o.id, XRayLines.line(o.id)?.energy ?? 0, os.net).contains { $0.kind == .sumPeak }
+                      }).max(by: { $0.1.significance < $1.1.significance }) {
+                // A sum-peak question that another line of the element answers (#124): pile-up cannot make a line away from every pile-up
+                // energy, so the element is shown as possible (with its sum-peak conflict kept), never proposed and never a bare question.
+                let pair = sum.requires.count == 1 ? sum.requires + sum.requires : sum.requires
+                reason = String(format: "Its %@ at %.2f keV is not a pile-up energy (%.1f \u{00D7} L_D), so its %@ (%.2f keV) is more than the %@ sum peak. Possible, not added.",
+                                Self.lineLabel(o.id), XRayLines.line(o.id)?.energy ?? 0, os.significance, Self.lineLabel(g.id),
+                                XRayLines.line(g.id)?.energy ?? 0, pair.joined(separator: "+"))
             }
             try append(el, group: g.id, stat: st, possibleReason: reason, unconfirmable: f.unconfirmable != nil)
         }
@@ -766,6 +812,9 @@ public nonisolated struct ElementProposer: Sendable {
         for f in overlapFinds where !candidates.contains(where: { $0.element == f.element }) {
             if let st = f.trial.stat { try append(f.element, group: f.trial.group, stat: st, possibleReason: f.trial.reason) }
         }
+        for f in belowFloorFinds where !candidates.contains(where: { $0.element == f.element }) {
+            try append(f.element, group: f.group, stat: f.stat, possibleReason: f.reason)
+        }
         candidates.sort { $0.significance > $1.significance }
 
         var sumPeaks: [SumPeakFinding] = []
@@ -776,7 +825,8 @@ public nonisolated struct ElementProposer: Sendable {
         }
 
         var notes = [
-            String(format: "Lines below %.2f keV are not tested (a measured limit of the continuum model, not a property of the method).", minimumLineEnergyKeV),
+            String(format: "Lines below %.2f keV are not tested (a measured limit of the continuum model, not a property of the method)%@.", minimumLineEnergyKeV,
+                   belowFloorGroups.isEmpty ? "" : "; C K\u{03B1} is measured with the final model and shown as possible only, never proposed"),
             String(format: "Identification: the residual's peaks at or above %.0f \u{03C3} of its top-hat filter (%.1f \u{00D7} below %.0f keV); a candidate joins when \u{03A3}(y \u{2212} \u{03BC})\u{00B2}/(\u{03BC} + (%.2f \u{03BC})\u{00B2}) falls by at least %.0f, %.0f %% of that at its own lines, with its area at or above Currie L_D (\(Self.rateText(currie)), \u{03C3}\u{2080} from the fit's own variance with it absent) and no line against it; the final fit drops what it does not need (%.0f). K\u{03B2} weights from NIST EPQ in this fit.",
                    t.peakSigma, t.lowEnergyFactor, t.lowEnergyBelowKeV, t.relativeModelTerm, t.minimumGain, 100 * t.minimumLocalShare, t.pruneGain),
             "Fit: \(fit.result.methodLabel) to decide, \(report.result.methodLabel) for the numbers shown; \(fit.result.backgroundLabel); \(fit.result.escapeLabel); \(fit.result.referenceShapesLabel); \(examined) residual peak\(examined == 1 ? "" : "s") examined, \(tested) candidate fits, \(fitsDone) fits in all.",

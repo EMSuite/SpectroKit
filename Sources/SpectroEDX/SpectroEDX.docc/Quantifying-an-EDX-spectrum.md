@@ -27,6 +27,8 @@ func proposeElements(counts: [UInt64], axis: EnergyAxis, beamEnergyKeV: Double) 
 ```
 
 - ``ProposalResult/proposed`` lists the elements the proposer kept, each an ``ElementCandidate`` with its net counts and sigma.
+- ``ProposalResult/possible`` lists the near misses, each with its `possibleReason`: show them, never add them on their own. Carbon
+  below the lowest tested line (0.45 keV) is measured and lands here, as does a sum-peak question that another line of the element answers.
 - ``ProposalResult/refused`` and ``ProposalResult/notes`` say which elements were not tested and why, in plain words.
 - The proposer throws ``ProposerError/cancelled`` when its task is cancelled. It keeps its own error rather than
   `SpectroCancelled`, and it returns nothing partial.

@@ -280,6 +280,9 @@ The proposer's confirmation-line rule (R4, `ProposerPolicy.familyConsistency`; i
 the bounds are physics (`familyOvervoltage` 2, `sumPeakFraction` 1, not measured cuts), `validation: "none"`; tests `FamilyConsistencyTests`, `DownwardFamilyTests` and
 `IdentificationLoopTests` on planted spectra, `RealFileAutoIDTests` (opt-in) on three measured files. The identification fit's Kβ weights are
 NIST EPQ's (`EDSLineWeights.epqK`), not eXSpy's; the quantification fit keeps eXSpy's by default (`FitPolicy.lineWeights`), so no parity row moves.
+Two near misses are shown as possible, never proposed (SpectroKit#124): carbon below the lowest tested line (0.45 keV) is measured
+once with the settled model and is possible at or above L_D, and a sum-peak question whose element has another line family at or
+above L_D off every pile-up energy is possible. No Python counterpart; `validation: "none"`; tests `NearMissTests` on planted spectra.
 
 The quantification fit's line-weight table (`FitPolicy.lineWeights`, `FitSettings.lineWeights`): `.exspy` (default, the parity
 path: every exSpy parity row is unchanged) or `.epq` (opt-in, NIST EPQ's Kβ/Kα for the K families: Al 0.0315, Mg 0.0174, Si 0.0571
