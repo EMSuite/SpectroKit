@@ -1,7 +1,7 @@
 # Unused-code scan (Periphery). A copy of the suite's template; edit it there.
 # Weekly: builds the package and its tests, scans with --retain-public (a kit's public API is used by the apps), and keeps
 # one open issue, "Periphery weekly scan", up to date with the findings. Findings are for triage; nothing is deleted here.
-# On a pull request that touches Swift: the same scan without the findings .periphery-baseline.json records (triaged and
+# On a pull request that touches Swift and carries the `periphery` label: the same scan without the findings .periphery-baseline.json records (triaged and
 # kept) and without Codable properties (test fixtures). A finding that is left is new: it is annotated on the PR as a
 # warning and the job stays green. Delete the code or, for a false positive, write the baseline again in the same PR:
 #   swift build --build-system native --build-tests
@@ -14,6 +14,7 @@ on:
     - cron: "17 3 * * 0"
   workflow_dispatch:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
     paths: ["**.swift", ".periphery-baseline.json", ".github/workflows/periphery.yml"]
 
 permissions:
@@ -55,7 +56,9 @@ jobs:
 
   new-findings:
     name: New unused code (warning only)
-    if: github.event_name == 'pull_request'
+    # On request only (suite#170): the scan builds the package a second time on a macOS runner and never fails, so it runs
+    # when the pull request carries the `periphery` label; otherwise it is reported skipped. The weekly scan is unchanged.
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'periphery')
     runs-on: macos-26
     timeout-minutes: 30
     permissions:
