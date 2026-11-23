@@ -1,11 +1,26 @@
-## What and why
+Fixes EMSuite/<repo>#<n>
 
-<!-- What does this change, and why? Link the issue it addresses. -->
+## What changes
 
-## Checklist
+<!-- In user words. The PR title is the CHANGELOG line (feat:, fix:, perf:, docs:, test:, refactor:, ci:, chore:); release-please writes the changelog, so no changelog line here. -->
 
-- [ ] `swift test -c release` passes
-- [ ] New or changed behaviour has a test that fails without the change
-- [ ] No tolerance was loosened to make a reference comparison pass (a difference from exSpy or HyperSpy is a bug unless marked `DEVIATION` with a reason)
-- [ ] Docs updated, including `docs/parity.md` if the supported features changed
-- [ ] Results that report `validation: "none"` are not described as validated
+## The test that failed before
+
+<!-- Name it. -->
+
+## Numbers
+
+- [ ] Unchanged
+- [ ] Changed: a before and after table below, the moved fixture in its own commit, the `changes-results` label
+
+## Screen
+
+- [ ] Unchanged
+- [ ] Snapshot attached
+- [ ] Unverified on screen
+
+## Docs
+
+- [ ] README, `docs/status.md`, `docs/parity.md` or the website page updated where they name what changed, or nothing names it
+
+<!-- feat!: only: a Migration paragraph saying what consumers change. -->

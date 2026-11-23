@@ -8,7 +8,7 @@
     ".": {
       "package-name": "SpectroKit",
       "changelog-path": "CHANGELOG.md",
-      "extra-files": ["CITATION.cff"]
+      "extra-files": ["CITATION.cff", "docs/status.md"]
     }
   }
 }
