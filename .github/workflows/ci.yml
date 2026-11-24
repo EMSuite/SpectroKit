@@ -20,10 +20,10 @@ concurrency:
 
 jobs:
   changes:
-    # A pull request that changes only prose (top-level *.md, docs/, LICENSE, issue templates) takes no macOS runner: `test`
+    # A pull request or a merge to main that changes only prose (top-level *.md, docs/, LICENSE, issue templates) takes no macOS runner: `test`
     # is then skipped, which a required check counts as passed (suite#170). Anything else, a Release PR's manifest included, runs.
     name: Build inputs changed
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.diff.outputs.code }}
@@ -41,10 +41,10 @@ jobs:
           fi
 
   test:
-    # Once per change (suite#170): on the pull request, on a tag and by hand, not again on the push to main after the merge
-    # (the post-merge job still builds main); skipped on a prose-only pull request (`changes`).
+    # On the pull request, on the push to main after the merge (so main cannot go red unnoticed), on a tag and by hand;
+    # skipped when a pull request or a merge changes only prose (`changes`, suite#170).
     needs: changes
-    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && (github.event_name != 'push' || startsWith(github.ref, 'refs/tags/')) }}
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     # The org's Mac runner while the org variable MACEM_MAC_RUNNER is set (never for a fork PR); else GitHub's macos-26.
     runs-on: ${{ vars.MACEM_MAC_RUNNER && !github.event.pull_request.head.repo.fork && fromJSON(vars.MACEM_MAC_RUNNER) || 'macos-26' }}
     timeout-minutes: 90
