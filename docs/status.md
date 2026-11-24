@@ -14,7 +14,8 @@ Live:
 - **EELS**: t/lambda thickness, zero-loss alignment, power-law extrapolation, Fourier-log, Fourier-ratio and Richardson-Lucy
   deconvolution, the edge model fit (joint, or per-edge windows with a 1σ per edge intensity) on 383 bundled K, L and M edges, the MLLS
   fit, composition in at% and wt%, region sums.
-- **SpectroCore**: line-profile pooling, display smoothing, sparse regions.
+- **SpectroCore**: line-profile pooling, display smoothing, sparse regions; a spectrum image's counts a band of scan rows at a time
+  (`countRows`, exact, dense or sparse), for a writer that streams the cube.
 
 Since 0.12.0: 0.13.0 (2026-11-01) added the EDX items above, removed `sameScanAs4DCube`, `elementsLine` and the duplicate GOS JSON,
 and made the kit texts name the method without a validation tag (a standard of known composition has not been measured; the

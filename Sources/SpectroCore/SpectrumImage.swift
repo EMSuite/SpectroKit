@@ -47,6 +47,29 @@ public nonisolated protocol SpectrumImage: Sendable {
     /// `any SpectrumImage` passes it.
     func sum(mask: PixelMask?, cancelled: @Sendable () -> Bool, progress: (@Sendable (Double) -> Void)?) throws -> [UInt64]
     func windowSums(_ ranges: [Range<Int>], cancelled: @Sendable () -> Bool, progress: (@Sendable (Double) -> Void)?) throws -> [[UInt64]]
+
+    /// The counts of scan rows `rows` (a band of `rows.count * nx` pixels) in C order, row, then column, then channel: what a
+    /// writer needs to stream the cube a band at a time (Electron Microscopy Studio's HyperSpy export) without holding it twice.
+    /// Exact; a sparse store's absent channels are 0. Throws `SpectrumRowsError` for rows outside the image, or for a conformer
+    /// that cannot hand out its pixels (the default).
+    func countRows(_ rows: Range<Int>) throws -> [UInt32]
+}
+
+/// Why `SpectrumImage.countRows` handed out nothing.
+public nonisolated enum SpectrumRowsError: Error, Equatable, LocalizedError {
+    /// The rows asked for are not all inside `0 ..< ny`.
+    case rowsOutsideImage(lower: Int, upper: Int, ny: Int)
+    /// The spectrum image keeps its pixels where they cannot be read a row at a time.
+    case notReadableByRows
+
+    public var errorDescription: String? {
+        switch self {
+        case .rowsOutsideImage(let lower, let upper, let ny):
+            "Rows \(lower)..<\(upper) are not inside a spectrum image of \(ny) rows."
+        case .notReadableByRows:
+            "This spectrum image cannot be read a row at a time."
+        }
+    }
 }
 
 extension SpectrumImage {
@@ -64,6 +87,18 @@ extension SpectrumImage {
         let out = windowSums(ranges)
         progress?(1)
         return out
+    }
+
+    /// A conformer that does not say how to read its rows refuses by name.
+    public func countRows(_ rows: Range<Int>) throws -> [UInt32] {
+        throw SpectrumRowsError.notReadableByRows
+    }
+
+    /// Refuses rows outside `0 ..< ny`.
+    package func checkRows(_ rows: Range<Int>) throws {
+        guard rows.lowerBound >= 0, rows.upperBound <= ny else {
+            throw SpectrumRowsError.rowsOutsideImage(lower: rows.lowerBound, upper: rows.upperBound, ny: ny)
+        }
     }
 }
 
@@ -144,6 +179,16 @@ public nonisolated struct DenseSpectrumImage: SpectrumImage {
         switch storage {
         case .narrow(let a): for c in 0..<channels { acc[c] += w * Double(a[base + c]) }
         case .wide(let a): for c in 0..<channels { acc[c] += w * Double(a[base + c]) }
+        }
+    }
+
+    /// The band's counts, widened to UInt32 when held as UInt16.
+    public func countRows(_ rows: Range<Int>) throws -> [UInt32] {
+        try checkRows(rows)
+        let band = (rows.lowerBound * nx * channels)..<(rows.upperBound * nx * channels)
+        switch storage {
+        case .narrow(let a): return a[band].map { UInt32($0) }
+        case .wide(let a): return Array(a[band])
         }
     }
 
@@ -275,6 +320,18 @@ package nonisolated struct SparseSpectrumImage: SpectrumImage {
 
     package func sum(mask: PixelMask?) -> [UInt64] {
         try! sum(mask: mask, cancelled: { false }, progress: nil)
+    }
+
+    /// The band's counts, each stored entry in its channel and every other channel 0.
+    package func countRows(_ rows: Range<Int>) throws -> [UInt32] {
+        try checkRows(rows)
+        var out = [UInt32](repeating: 0, count: rows.count * nx * channels)
+        let first = rows.lowerBound * nx
+        for p in first..<(rows.upperBound * nx) {
+            let base = (p - first) * channels
+            for k in rowOffsets[p]..<rowOffsets[p + 1] { out[base + Int(channelIndex[k])] = counts[k] }
+        }
+        return out
     }
 
     package func sum(mask: PixelMask?, cancelled: @Sendable () -> Bool = SpectroCancellation.task,

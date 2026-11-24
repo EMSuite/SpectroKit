@@ -118,6 +118,7 @@ public nonisolated final class LoadedSpectrumImage: SpectrumImageSource {
     public var nx: Int { image.nx }
     public var channels: Int { image.channels }
     public func sum(mask: PixelMask?) -> [UInt64] { image.sum(mask: mask) }
+    public func countRows(_ rows: Range<Int>) throws -> [UInt32] { try image.countRows(rows) }
     public func windowSums(_ ranges: [Range<Int>]) -> [[UInt64]] { image.windowSums(ranges) }
     public func sum(mask: PixelMask?, cancelled: @Sendable () -> Bool = SpectroCancellation.task,
                      progress: (@Sendable (Double) -> Void)? = nil) throws -> [UInt64] {
