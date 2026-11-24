@@ -45,8 +45,9 @@ jobs:
     # skipped when a pull request or a merge changes only prose (`changes`, suite#170).
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
-    # The org's Mac runner while the org variable MACEM_MAC_RUNNER is set (never for a fork PR); else GitHub's macos-26.
-    runs-on: ${{ vars.MACEM_MAC_RUNNER && !github.event.pull_request.head.repo.fork && fromJSON(vars.MACEM_MAC_RUNNER) || 'macos-26' }}
+    # The org's Mac runners while MACEM_MAC_RUNNER is set (never for a fork PR): either one while MACEM_KIT_RUNNER is set
+    # too (EMSuite tools/ci-runner/README.md), else the first; else GitHub's macos-26.
+    runs-on: ${{ !github.event.pull_request.head.repo.fork && vars.MACEM_MAC_RUNNER && (vars.MACEM_KIT_RUNNER && fromJSON(vars.MACEM_KIT_RUNNER) || fromJSON(vars.MACEM_MAC_RUNNER)) || 'macos-26' }}
     timeout-minutes: 90
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
@@ -65,8 +66,9 @@ jobs:
   # consumer does; this job pins each dependency to the lower bound Package.swift declares (read from the manifest, so it follows
   # a raised floor) and runs the same gate.
   test-floors:
-    # The org's Mac runner while the org variable MACEM_MAC_RUNNER is set (never for a fork PR); else GitHub's macos-26.
-    runs-on: ${{ vars.MACEM_MAC_RUNNER && !github.event.pull_request.head.repo.fork && fromJSON(vars.MACEM_MAC_RUNNER) || 'macos-26' }}
+    # The org's Mac runners while MACEM_MAC_RUNNER is set (never for a fork PR): either one while MACEM_KIT_RUNNER is set
+    # too (EMSuite tools/ci-runner/README.md), else the first; else GitHub's macos-26.
+    runs-on: ${{ !github.event.pull_request.head.repo.fork && vars.MACEM_MAC_RUNNER && (vars.MACEM_KIT_RUNNER && fromJSON(vars.MACEM_KIT_RUNNER) || fromJSON(vars.MACEM_MAC_RUNNER)) || 'macos-26' }}
     timeout-minutes: 90
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
