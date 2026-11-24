@@ -51,6 +51,10 @@ public nonisolated enum EELSSpectrumOps {
         return (r.image, r.nonFinite)
     }
 
+    /// The most bytes an extrapolated image may take: half of the machine's memory. exSpy has no cap (NumPy raises MemoryError);
+    /// here a larger result is refused before it is allocated, as the input and the transform that follows need the other half.
+    package static let extrapolationByteBudget = Int(clamping: ProcessInfo.processInfo.physicalMemory / 2)
+
     private static func extrapolate<I: EELSSpectrumImage>(
         _ image: I, windowChannels: Int, extrapolationChannels: Int, fixNegativeR: Bool, zeroNonFinite: Bool,
         cancelled: @Sendable () -> Bool, progress: (@Sendable (Double) -> Void)?
@@ -58,11 +62,11 @@ public nonisolated enum EELSSpectrumOps {
         let n = image.channels
         guard extrapolationChannels >= 1 else { throw EELSDeconvolutionError.extrapolationWindowTooWide(window: windowChannels, channels: n) }
         guard windowChannels >= 3, windowChannels <= n else { throw EELSDeconvolutionError.extrapolationWindowTooWide(window: windowChannels, channels: n) }
-        // An extension or a cube past Int is refused in words, never an overflow trap.
+        // An extension or a cube past Int, or a result past the memory budget, is refused in words, never a trap (#138).
         let (extended, o1) = n.addingReportingOverflow(extrapolationChannels)
         let (pixels, o2) = image.nx.multipliedReportingOverflow(by: image.ny)
         let (values, o3) = pixels.multipliedReportingOverflow(by: extended)
-        guard !o1, !o2, !o3, values <= 1 << 40 else {
+        guard !o1, !o2, !o3, values <= extrapolationByteBudget / MemoryLayout<Double>.stride else {
             throw EELSDeconvolutionError.extrapolationWindowTooWide(window: extrapolationChannels, channels: n)
         }
         let axis = try EELSAxis(offset: image.energyOffsetEV, scale: image.energyScaleEV, size: extended)

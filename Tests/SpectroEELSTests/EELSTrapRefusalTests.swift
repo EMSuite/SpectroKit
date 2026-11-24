@@ -39,6 +39,16 @@ struct EELSTrapRefusalTests {
         }
     }
 
+    /// 2^38 channels are 2 TiB of Doubles: within Int, past any machine's memory budget (#138). Before, the guard let 2^40 values
+    /// through and the allocation ended the process.
+    @Test func anExtrapolationPastTheMemoryBudgetIsRefused() throws {
+        let img = try image()
+        #expect(throws: EELSDeconvolutionError.extrapolationWindowTooWide(window: 1 << 38, channels: 40)) {
+            try EELSSpectrumOps.powerLawExtrapolation(img, windowChannels: 10, extrapolationChannels: 1 << 38)
+        }
+        #expect(try EELSSpectrumOps.powerLawExtrapolation(img, windowChannels: 10, extrapolationChannels: 1024).image.channels == 1064)
+    }
+
     @Test func aTaperOffsetPastIntIsRefused() throws {
         let img = try image()
         #expect(throws: EELSDeconvolutionError.tooFewChannels(40)) { try EELSSpectrumOps.hanningTaper(img, channels: 5, offset: Int.max) }

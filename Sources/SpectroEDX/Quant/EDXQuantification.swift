@@ -183,7 +183,7 @@ public nonisolated enum EDXQuantification {
 
         // Pixels are independent, so the loop runs in chunks on all cores (`SpectroParallel`); each chunk writes its own slots, and
         // the maps are assembled afterwards in pixel order, so the result does not depend on the schedule.
-        enum Outcome { case skipped, ok(EDXQuantificationPixel), failed(String) }
+        enum Outcome: Sendable { case skipped, ok(EDXQuantificationPixel), failed(String) }
         let slots = SpectroSlots<Outcome>(count: pixels, initial: .skipped)
         try SpectroParallel.forEachPixel(count: pixels, chunk: 2048, cancelled: cancelled) { p in
             if navigationMask?[p] == true { return }
