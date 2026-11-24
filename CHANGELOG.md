@@ -8,6 +8,13 @@ each entry from the merged pull requests' titles; a breaking change's Migration 
 Every quantification and thickness result reports `validation: "none"`: agreement with exSpy and HyperSpy is not validation on a
 sample of known composition.
 
+## [0.17.0](https://github.com/EMSuite/SpectroKit/compare/0.16.0...0.17.0) (2026-11-24)
+
+
+### Features
+
+* a spectrum image hands out its counts a band of scan rows at a time ([#135](https://github.com/EMSuite/SpectroKit/issues/135)) ([03e6d83](https://github.com/EMSuite/SpectroKit/commit/03e6d83935ec9d59095132f1fcbe0b141054fb7a))
+
 ## [0.16.0](https://github.com/EMSuite/SpectroKit/compare/0.15.0...0.16.0) (2026-11-18)
 
 
