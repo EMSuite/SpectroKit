@@ -15,8 +15,14 @@ struct CountRowsTests {
     private static let ny = 4, nx = 3, channels = 5
 
     /// A planted cube: every count names its row, column and channel; every third entry 0, so the sparse store has gaps.
-    private static let counts: [UInt32] = (0 ..< ny * nx * channels).map { i in
-        i % 3 == 0 ? 0 : UInt32(1000 * (i / (nx * channels)) + 10 * ((i / channels) % nx) + i % channels) + 70_000 * UInt32(i % 2)
+    private static let counts: [UInt32] = (0 ..< ny * nx * channels).map { (i: Int) -> UInt32 in
+        if i % 3 == 0 { return 0 }
+        let row: Int = i / (nx * channels)
+        let column: Int = (i / channels) % nx
+        let channel: Int = i % channels
+        let named = UInt32(1000 * row + 10 * column + channel)
+        let wide: UInt32 = i % 2 == 0 ? 0 : 70_000
+        return named + wide
     }
 
     /// The same cube as a CSR store holding only the nonzero entries.
