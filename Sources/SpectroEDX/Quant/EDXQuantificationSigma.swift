@@ -260,7 +260,7 @@ extension EDXQuantification {
         var mS: [Double]? = maps.massThickness.map { _ in [Double](repeating: 0, count: pixels) }
         var sigmaFailures = [String?](repeating: nil, count: pixels)
 
-        enum Outcome { case skipped, ok(EDXQuantificationSigma), failed(String) }
+        enum Outcome: Sendable { case skipped, ok(EDXQuantificationSigma), failed(String) }
         let slots = SpectroSlots<Outcome>(count: pixels, initial: .skipped)
         try SpectroParallel.forEachPixel(count: pixels, chunk: 256, cancelled: cancelled) { p in
             if navigationMask?[p] == true || maps.failures[p] != nil { return }

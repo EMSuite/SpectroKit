@@ -60,7 +60,8 @@ package nonisolated enum SpectroParallel {
 /// A buffer several chunks write to at disjoint indices (the pixel loop's output): raw storage, so no array uniqueness check races
 /// between threads. `@unchecked Sendable` because every writer owns a disjoint set of indices (one pixel's slot) and `values` is read
 /// only after the loop has joined; that invariant is the callers' (`SpectroParallel.forEachPixel`'s `body` writes its own pixel).
-package final class SpectroSlots<T>: @unchecked Sendable {
+/// `T: Sendable`: the unchecked conformance covers the storage, never the payload, which crosses threads (#138).
+package final class SpectroSlots<T: Sendable>: @unchecked Sendable {
     private let storage: UnsafeMutablePointer<T>
     package let count: Int
 
