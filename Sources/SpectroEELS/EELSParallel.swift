@@ -19,4 +19,4 @@ package nonisolated enum EELSParallel {
 }
 
 /// The pixel loop's output buffer, SpectroCore's `SpectroSlots`.
-package typealias EELSSlots<T> = SpectroSlots<T>
+package typealias EELSSlots<T: Sendable> = SpectroSlots<T>
