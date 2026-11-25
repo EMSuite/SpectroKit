@@ -391,26 +391,26 @@ whole.quantification.method.fitToKeV = nil
 whole.quantification.rows: array 4
 whole.quantification.rows[0].element = "Al"
 whole.quantification.rows[0].groupID = "Al_Ka"
-whole.quantification.rows[0].net = 407d361888d229a7 467.38098985762412
-whole.quantification.rows[0].sigma = 4037238d471544f6 23.138874476139755
+whole.quantification.rows[0].net = 407d365e2d6f4dc8 467.39799254873333
+whole.quantification.rows[0].sigma = 403723aa068ecf70 23.139313135019108
 whole.quantification.rows[0].supported = true
 whole.quantification.rows[0].atBound = false
 whole.quantification.rows[0].isReference = true
 whole.quantification.rows[0].kFreeRatio = 3ff0000000000000 1
 whole.quantification.rows[0].kFreeSigma = nil
-whole.quantification.rows[0].atomicPercent = 40555518dce738f0 85.329642511180054
-whole.quantification.rows[0].atomicSigma = 4003201c137111d0 2.390678550613508
-whole.quantification.rows[0].weightPercent = 405524b5230984b5 84.573555716796207
-whole.quantification.rows[0].weightSigma = 4003f45862691e46 2.4943092048959299
+whole.quantification.rows[0].atomicPercent = 40555506e29dbbc0 85.328545240437052
+whole.quantification.rows[0].atomicSigma = 400320184b7ac622 2.3906713387339247
+whole.quantification.rows[0].weightPercent = 40552489104fdb1d 84.570865705475128
+whole.quantification.rows[0].weightSigma = 4003f4b14570666e 2.4944787430693429
 whole.quantification.rows[0].atomicTerms.relative: dict 4
 whole.quantification.rows[0].atomicTerms.relative.absorption = 0000000000000000 0
-whole.quantification.rows[0].atomicTerms.relative.counting = 3f93b58e53ee2844 0.019247268555354205
-whole.quantification.rows[0].atomicTerms.relative.k = 3f94d90523d58e64 0.020359115898271787
+whole.quantification.rows[0].atomicTerms.relative.counting = 3f93b5ac57b15821 0.019247715809193381
+whole.quantification.rows[0].atomicTerms.relative.k = 3f94d9023b2a771d 0.020359072552870495
 whole.quantification.rows[0].atomicTerms.relative.thickness = 0000000000000000 0
 whole.quantification.rows[0].weightTerms.relative: dict 4
 whole.quantification.rows[0].weightTerms.relative.absorption = 0000000000000000 0
-whole.quantification.rows[0].weightTerms.relative.counting = 3f95a3cea88d52d0 0.021132687604523082
-whole.quantification.rows[0].weightTerms.relative.k = 3f9510fe898f2b9e 0.020572640558195958
+whole.quantification.rows[0].weightTerms.relative.counting = 3f95a4bd17e7c1e4 0.021136240562499867
+whole.quantification.rows[0].weightTerms.relative.k = 3f951124b872dd9b 0.020573209531645636
 whole.quantification.rows[0].weightTerms.relative.thickness = 0000000000000000 0
 whole.quantification.rows[0].absorptionSpreadAtomic = nil
 whole.quantification.rows[0].absorptionSpreadWeight = nil
@@ -420,26 +420,26 @@ whole.quantification.rows[0].failure = nil
 whole.quantification.rows[0].lineNote = nil
 whole.quantification.rows[1].element = "Mg"
 whole.quantification.rows[1].groupID = "Mg_Ka"
-whole.quantification.rows[1].net = 403b7e117b1a077f 27.492454236845784
-whole.quantification.rows[1].sigma = 4016ad7fb72b60d8 5.669432508490182
+whole.quantification.rows[1].net = 403b7df3926a9189 27.491997862832736
+whole.quantification.rows[1].sigma = 4016ad7874d15fe9 5.6694048168937821
 whole.quantification.rows[1].supported = true
 whole.quantification.rows[1].atBound = false
 whole.quantification.rows[1].isReference = false
-whole.quantification.rows[1].kFreeRatio = 3fae1df6fa928be1 0.058822362983185668
-whole.quantification.rows[1].kFreeSigma = 3f898c64ac83c885 0.012474810137494305
-whole.quantification.rows[1].atomicPercent = 4014a1ecc3aa242b 5.1581297466846463
-whole.quantification.rows[1].atomicSigma = 3ff6d5080bab4804 1.4270096259901957
-whole.quantification.rows[1].weightPercent = 40126bcdf6a24410 4.6052778755702235
-whole.quantification.rows[1].weightSigma = 3ff48325b15cc8c2 1.2820183685512778
+whole.quantification.rows[1].kFreeRatio = 3fae1d8e6a7e047c 0.058819246768515548
+whole.quantification.rows[1].kFreeSigma = 3f898c1cde6d5c3e 0.012474275148333654
+whole.quantification.rows[1].atomicPercent = 4014a193be64fc62 5.157790160096825
+whole.quantification.rows[1].atomicSigma = 3ff6d4b2bff3cec8 1.4269282816066369
+whole.quantification.rows[1].weightPercent = 40126b679c673efd 4.6048874319092166
+whole.quantification.rows[1].weightSigma = 3ff482c0f9dba338 1.2819223175121817
 whole.quantification.rows[1].atomicTerms.relative: dict 4
 whole.quantification.rows[1].atomicTerms.relative.absorption = 0000000000000000 0
-whole.quantification.rows[1].atomicTerms.relative.counting = 3fc9ad500389ee46 0.20060157940666751
-whole.quantification.rows[1].atomicTerms.relative.k = 3fc862c433542686 0.19051411157879644
+whole.quantification.rows[1].atomicTerms.relative.counting = 3fc9ad66a8ab9139 0.2006042789063345
+whole.quantification.rows[1].atomicTerms.relative.k = 3fc862ca1f2bad90 0.19051481744768894
 whole.quantification.rows[1].atomicTerms.relative.thickness = 0000000000000000 0
 whole.quantification.rows[1].weightTerms.relative: dict 4
 whole.quantification.rows[1].weightTerms.relative.absorption = 0000000000000000 0
-whole.quantification.rows[1].weightTerms.relative.counting = 3fc9d6c933ad4f9a 0.20186724684992613
-whole.quantification.rows[1].weightTerms.relative.k = 3fc8894ed7107eba 0.19169030667489101
+whole.quantification.rows[1].weightTerms.relative.counting = 3fc9d6e2005b858f 0.2018702031846655
+whole.quantification.rows[1].weightTerms.relative.k = 3fc889562a46930b 0.1916911798881745
 whole.quantification.rows[1].weightTerms.relative.thickness = 0000000000000000 0
 whole.quantification.rows[1].absorptionSpreadAtomic = nil
 whole.quantification.rows[1].absorptionSpreadWeight = nil
@@ -449,26 +449,26 @@ whole.quantification.rows[1].failure = nil
 whole.quantification.rows[1].lineNote = nil
 whole.quantification.rows[2].element = "Si"
 whole.quantification.rows[2].groupID = "Si_Ka"
-whole.quantification.rows[2].net = 40483983ddea3400 48.449336757046694
-whole.quantification.rows[2].sigma = 401e363c0b09721c 7.552963421298525
+whole.quantification.rows[2].net = 404839db974781d6 48.452013883510219
+whole.quantification.rows[2].sigma = 401e3675c5ca4778 7.5531836418830309
 whole.quantification.rows[2].supported = true
 whole.quantification.rows[2].atBound = false
 whole.quantification.rows[2].isReference = false
-whole.quantification.rows[2].kFreeRatio = 3fba898c961f83e4 0.10366133370509051
-whole.quantification.rows[2].kFreeSigma = 3f915cbc44018189 0.016955320025205309
-whole.quantification.rows[2].atomicPercent = 40217a437cddaf89 8.7387961407291801
-whole.quantification.rows[2].atomicSigma = 40007bb315f0785f 2.0604001726160699
-whole.quantification.rows[2].weightPercent = 4022081000d7a029 9.0157470954146266
-whole.quantification.rows[2].weightSigma = 4000f4d1fd109533 2.1195411463437721
+whole.quantification.rows[2].kFreeRatio = 3fba89ad6a84e421 0.10366329050602065
+whole.quantification.rows[2].kFreeSigma = 3f915cb4ef93700e 0.016955210802606806
+whole.quantification.rows[2].atomicPercent = 40217a4a6153be4f 8.7388487257695981
+whole.quantification.rows[2].atomicSigma = 40007bada6357bce 2.0603898034164336
+whole.quantification.rows[2].weightPercent = 40220800b9210879 9.0156305172752003
+whole.quantification.rows[2].weightSigma = 4000f4ba234ebb61 2.1194956549074253
 whole.quantification.rows[2].atomicTerms.relative: dict 4
 whole.quantification.rows[2].atomicTerms.relative.absorption = 0000000000000000 0
-whole.quantification.rows[2].atomicTerms.relative.counting = 3fc30c778b2c210c 0.14881796165014582
-whole.quantification.rows[2].atomicTerms.relative.k = 3fc7687b18530908 0.18287600219452593
+whole.quantification.rows[2].atomicTerms.relative.counting = 3fc30c5625ae490a 0.14881398048289213
+whole.quantification.rows[2].atomicTerms.relative.k = 3fc7687a183cde2b 0.18287588294491405
 whole.quantification.rows[2].atomicTerms.relative.thickness = 0000000000000000 0
 whole.quantification.rows[2].weightTerms.relative: dict 4
 whole.quantification.rows[2].weightTerms.relative.absorption = 0000000000000000 0
-whole.quantification.rows[2].weightTerms.relative.counting = 3fc30059961c2b5a 0.14844817952720285
-whole.quantification.rows[2].weightTerms.relative.k = 3fc7557ccc061e8f 0.18229637109856298
+whole.quantification.rows[2].weightTerms.relative.counting = 3fc3003ba7b57b54 0.14844461144363186
+whole.quantification.rows[2].weightTerms.relative.k = 3fc7557f7858bcda 0.18229668976116536
 whole.quantification.rows[2].weightTerms.relative.thickness = 0000000000000000 0
 whole.quantification.rows[2].absorptionSpreadAtomic = nil
 whole.quantification.rows[2].absorptionSpreadWeight = nil
@@ -478,31 +478,31 @@ whole.quantification.rows[2].failure = nil
 whole.quantification.rows[2].lineNote = nil
 whole.quantification.rows[3].element = "Cu"
 whole.quantification.rows[3].groupID = "Cu_Ka"
-whole.quantification.rows[3].net = 4012d79212e5305e 4.7105181648622345
-whole.quantification.rows[3].sigma = 4004b13cf510b651 2.5865420480466033
+whole.quantification.rows[3].net = 4012e07110abfa2a 4.7191813092199855
+whole.quantification.rows[3].sigma = 4004b5d6eba2f449 2.5887888344864547
 whole.quantification.rows[3].supported = true
 whole.quantification.rows[3].atBound = false
 whole.quantification.rows[3].isReference = false
-whole.quantification.rows[3].kFreeRatio = 3f84a40ec98a253e 0.010078540349484851
-whole.quantification.rows[3].kFreeSigma = 3f76c25e340de62c 0.0055564575021605327
-whole.quantification.rows[3].atomicPercent = 3fe8bff3a1376e42 0.77343160140612377
-whole.quantification.rows[3].atomicSigma = 3fdccdd34bcf8fca 0.4500625839557385
-whole.quantification.rows[3].weightPercent = 3ffce2ff5c58c165 1.8054193122189528
-whole.quantification.rows[3].weightSigma = 3ff0a270a22a93f2 1.039658196890056
+whole.quantification.rows[3].kFreeRatio = 3f84ad9548460a54 0.010096708553423962
+whole.quantification.rows[3].kFreeSigma = 3f76c742f7f75915 0.0055611244165077083
+whole.quantification.rows[3].atomicPercent = 3fe8cb4aa8be5792 0.77481587369651295
+whole.quantification.rows[3].atomicSigma = 3fdcd4a590ed31fe 0.45047892716391391
+whole.quantification.rows[3].weightPercent = 3ffcf017b163f8e4 1.8086163453404476
+whole.quantification.rows[3].weightSigma = 3ff0a63828be36da 1.0405809012913125
 whole.quantification.rows[3].atomicTerms.relative: dict 4
 whole.quantification.rows[3].atomicTerms.relative.absorption = 0000000000000000 0
-whole.quantification.rows[3].atomicTerms.relative.counting = 3fe17e142078d41f 0.5466404566019526
-whole.quantification.rows[3].atomicTerms.relative.k = 3fc988dc9cb20d1f 0.19948918963573534
+whole.quantification.rows[3].atomicTerms.relative.counting = 3fe179b4e5747d7f 0.54610676589429363
+whole.quantification.rows[3].atomicTerms.relative.k = 3fc988c54e21c7ee 0.19948641123806915
 whole.quantification.rows[3].atomicTerms.relative.thickness = 0000000000000000 0
 whole.quantification.rows[3].weightTerms.relative: dict 4
 whole.quantification.rows[3].weightTerms.relative.absorption = 0000000000000000 0
-whole.quantification.rows[3].weightTerms.relative.counting = 3fe14f78af4d5c8f 0.5409511016722649
-whole.quantification.rows[3].weightTerms.relative.k = 3fc9457e771e9ad5 0.19743328873047142
+whole.quantification.rows[3].weightTerms.relative.counting = 3fe14b1000337246 0.54041290320635293
+whole.quantification.rows[3].weightTerms.relative.k = 3fc94548b3926c16 0.19742687957918353
 whole.quantification.rows[3].weightTerms.relative.thickness = 0000000000000000 0
 whole.quantification.rows[3].absorptionSpreadAtomic = nil
 whole.quantification.rows[3].absorptionSpreadWeight = nil
-whole.quantification.rows[3].atomicTermsText = "counting 54.7 % ⊕ k 19.9 % = 58.2 % → ±0.45 at% · absorption not applied"
-whole.quantification.rows[3].weightTermsText = "counting 54.1 % ⊕ k 19.7 % = 57.6 % → ±1 wt% · absorption not applied"
+whole.quantification.rows[3].atomicTermsText = "counting 54.6 % ⊕ k 19.9 % = 58.1 % → ±0.45 at% · absorption not applied"
+whole.quantification.rows[3].weightTermsText = "counting 54.0 % ⊕ k 19.7 % = 57.5 % → ±1 wt% · absorption not applied"
 whole.quantification.rows[3].failure = nil
 whole.quantification.rows[3].lineNote = nil
 whole.quantification.referenceElement = "Al"
@@ -515,16 +515,16 @@ whole.quantification.fit.groupIDs[4] = "Ga_La"
 whole.quantification.fit.groupIDs[5] = "Mg_Ka"
 whole.quantification.fit.groupIDs[6] = "O_Ka"
 whole.quantification.fit.groupIDs[7] = "Si_Ka"
-whole.quantification.fit.values: n 8 sum 408168d814a0ac9e 557.10550809408937 fnv b9bf86634c735ba
-whole.quantification.fit.values[0] = 407d361888d229a7 467.38098985762412
-whole.quantification.fit.values[1] = 4012d79212e5305e 4.7105181648622345
+whole.quantification.fit.values: n 8 sum 4081691b42544d3b 557.13831010685624 fnv 2cb300b55a056b3
+whole.quantification.fit.values[0] = 407d365e2d6f4dc8 467.39799254873333
+whole.quantification.fit.values[1] = 4012e07110abfa2a 4.7191813092199855
 whole.quantification.fit.values[2] = 0000000000000000 0
 whole.quantification.fit.values[3] = 0000000000000000 0
-whole.quantification.fit.values[4] = 402224f896967b51 9.0722090777104842
-whole.quantification.fit.values[5] = 403b7e117b1a077f 27.492454236845784
+whole.quantification.fit.values[4] = 4022277cdce06e3b 9.0771245025599594
+whole.quantification.fit.values[5] = 403b7df3926a9189 27.491997862832736
 whole.quantification.fit.values[6] = 0000000000000000 0
-whole.quantification.fit.values[7] = 40483983ddea3400 48.449336757046694
-whole.quantification.fit.covariance: n 64 sum 4084cb3a4f54b52f 665.4034716241639 fnv 7f6c1ff08732eda9
+whole.quantification.fit.values[7] = 404839db974781d6 48.452013883510219
+whole.quantification.fit.covariance: n 64 sum 4084cbb33d6d2b68 665.46251950539317 fnv 64ea52865b7794cd
 whole.quantification.fit.covarianceKind = "sandwich covariance of unweighted least squares, Var(data) = model (Poisson) on the passive set (columns not held at a bound); a bound-active area carries the full-design marginal variance (as if freed) and no covariance"
 whole.quantification.fit.supported: n 8 sum-bits 8 fnv c8ca863b3f69fa5
 whole.quantification.fit.atBound: n 8 sum-bits 3 fnv c05687a1529311c4
@@ -532,7 +532,7 @@ whole.quantification.fit.escapeValues: array 8
 whole.quantification.fit.escapeValues[0] = nil
 whole.quantification.fit.escapeValues[1] = 0000000000000000 0
 whole.quantification.fit.escapeValues[2] = nil
-whole.quantification.fit.escapeValues[3] = 400aabf7225320cf 3.3339674646013928
+whole.quantification.fit.escapeValues[3] = 400a753fc68eb682 3.307250548582318
 whole.quantification.fit.escapeValues[4] = nil
 whole.quantification.fit.escapeValues[5] = nil
 whole.quantification.fit.escapeValues[6] = nil
@@ -554,17 +554,17 @@ whole.quantification.fit.backgroundNames[12] = "continuum s1 t^2"
 whole.quantification.fit.backgroundNames[13] = "continuum s1 t^3"
 whole.quantification.fit.backgroundNames[14] = "continuum s1 t^4"
 whole.quantification.fit.backgroundNames[15] = "continuum s1 t^5"
-whole.quantification.fit.backgroundCoefficients: n 16 sum 40704022e2a11ca9 260.00851691183431 fnv e99637d3ba95dce5
+whole.quantification.fit.backgroundCoefficients: n 16 sum 4070413cf201a2b6 260.07737923277762 fnv 86240bac20f80a3
 whole.quantification.fit.channels = 34..<512
-whole.quantification.fit.model: n 478 sum 408642460c1ad601 712.28420277562702 fnv 63735467716dc517
-whole.quantification.fit.residual: n 478 sum c01923060d6b00b5 -6.2842027756270697 fnv 2727a45327eea217
-whole.quantification.fit.standardizedResidual: n 478 sum c0086dc813cc6db7 -3.0536042734872484 fnv bf189c09481952e5
+whole.quantification.fit.model: n 478 sum 4086425f6e7755eb 712.29659741621924 fnv 9934ce100fdee7da
+whole.quantification.fit.residual: n 478 sum c0192fb73baaf582 -6.2965974162192442 fnv 7a35fad5d27bd5e2
+whole.quantification.fit.standardizedResidual: n 478 sum c008734182371c8f -3.0562772915905678 fnv 17d99d7a92420b58
 whole.quantification.fit.negativeModelChannels = 0
 whole.quantification.fit.degreesOfFreedom = 452
-whole.quantification.fit.reducedChiSquared = 3fe2afe304f4bc9c 0.58397055595368697
-whole.quantification.fit.pearsonReducedChiSquared = 3fd88041fb6a599f 0.38282823135650718
-whole.quantification.fit.deviance = 4076a02f712bda1c 362.01158253793415
-whole.quantification.fit.reducedDeviance = 3fe9a10f39f6c539 0.80091058083613753
+whole.quantification.fit.reducedChiSquared = 3fe2afea80ae8390 0.58397412427085449
+whole.quantification.fit.pearsonReducedChiSquared = 3fd8800a075ba192 0.38281489103840116
+whole.quantification.fit.deviance = 4076a15c25214d0b 362.08499634750541
+whole.quantification.fit.reducedDeviance = 3fe9a263d8805745 0.80107300076881727
 whole.quantification.fit.methodLabel = "least squares, unweighted"
 whole.quantification.fit.referenceShapesLabel = "reference shapes: none"
 whole.quantification.fit.escapeLabel = "escape peaks: fitted for 2 line groups above the Si K edge (1.839 keV)"
@@ -590,25 +590,25 @@ whole.quantification.fit.devianceHistory: n 0 sum 0000000000000000 0 fnv cbf29ce
 whole.quantification.fileAxis.offset = bfdf4b0e19448200 -0.48895599811115176
 whole.quantification.fileAxis.scale = 3f94855da0000000 0.020039999857544899
 whole.quantification.fileAxis.size = 512
-whole.quantification.usedAxis.offset = bfdf7cbba62011f3 -0.49198809836550977
-whole.quantification.usedAxis.scale = 3f94a3cc1c57b1b6 0.020156087140934274
+whole.quantification.usedAxis.offset = bfdf765162a9bec5 -0.49159655222954896
+whole.quantification.usedAxis.scale = 3f94a2c1ba58c7bd 0.020152117727952879
 whole.quantification.usedAxis.size = 512
 whole.quantification.axisLocked = false
 whole.quantification.refinement.fileOffset = bfdf4b0e19448200 -0.48895599811115176
 whole.quantification.refinement.fileScale = 3f94855da0000000 0.020039999857544899
 whole.quantification.refinement.fileResolutionMnKaEV = 4060400000000000 130
-whole.quantification.refinement.offset = bfdf7cbba62011f3 -0.49198809836550977
-whole.quantification.refinement.scale = 3f94a3cc1c57b1b6 0.020156087140934274
-whole.quantification.refinement.resolutionMnKaEV = 406053a685f5ed43 130.61407754929141
-whole.quantification.refinement.rssFile = 40954ed514f96f63 1363.708087823318
-whole.quantification.refinement.rssRefined = 40707f466a600e82 263.95469129106652
-whole.quantification.refinement.iterations = 104
+whole.quantification.refinement.offset = bfdf765162a9bec5 -0.49159655222954896
+whole.quantification.refinement.scale = 3f94a2c1ba58c7bd 0.020152117727952879
+whole.quantification.refinement.resolutionMnKaEV = 40605376a22700e0 130.60823161714416
+whole.quantification.refinement.rssFile = 409454b63b8a51b3 1301.1779615032544
+whole.quantification.refinement.rssRefined = 406f2bb2a230e6db 249.36555585433129
+whole.quantification.refinement.iterations = 106
 whole.quantification.refinement.converged = true
 whole.quantification.refinement.parametersAtBound: n 0 sum 0000000000000000 0 fnv cbf29ce484222325
 whole.quantification.refinement.boundText = ""
 whole.quantification.refinement.size = 512
-whole.quantification.plotModel: n 512 sum 408642460c1ad601 712.28420277562702 fnv 724e54731dbd18d7
-whole.quantification.plotBackground: n 512 sum 406198f0ded13ffe 140.77940312260756 fnv dfb53193382aa4b
+whole.quantification.plotModel: n 512 sum 4086425f6e7755eb 712.29659741621924 fnv d6caecbd9a49259a
+whole.quantification.plotBackground: n 512 sum 4061990d06dcf4c1 140.7828401866482 fnv 663deb2a162c32a6
 whole.quantification.kSet.kind = .computed
 whole.quantification.kSet.elements: array 4
 whole.quantification.kSet.elements[0] = "Al"
@@ -633,12 +633,12 @@ whole.quantification.absorption.refused = "GMS file: no stage tilt (Microscope I
 whole.quantification.warnings: array 1
 whole.quantification.warnings[0] = "a weak line next to Al Kα reads low by ≈ 300 counts per pooled spectrum on synthetic data (cause: the Al Kα incomplete-charge tail, unmodelled until a tail is measured on an Al matrix, `TailEstimate`); unmeasured on real data. Weak-line bias measured on synthetic data: Δ = −270 ± 31 counts at 900 planted Mg Kα (generator A, no tail: continuum–line projection) and −272 ± 23 at 882 (generator S); −325 ± 38 at 3000 (A) and −226 ± 22 at 2899 (S)"
 whole.quantification.qualityLabel = "χ²ᵣ (Pearson)"
-whole.quantification.quality = 3fd88041fb6a599f 0.38282823135650718
+whole.quantification.quality = 3fd8800a075ba192 0.38281489103840116
 whole.quantification.footerLines: array 9
 whole.quantification.footerLines[0] = "least squares, unweighted · continuum: Kramers×Bernstein(9,5), split at 1.5596 keV (step broadened by the detector resolution); orders chosen on synthetic data · escape peaks: fitted for 2 line groups above the Si K edge (1.839 keV)"
-whole.quantification.footerLines[1] = "energy axis: file -0.489 keV + 0.0200 keV/ch → refined -3.0 eV, gain +0.579 %, FWHM(Mn Kα) 131 eV"
+whole.quantification.footerLines[1] = "energy axis: file -0.489 keV + 0.0200 keV/ch → refined -2.6 eV, gain +0.559 %, FWHM(Mn Kα) 131 eV"
 whole.quantification.footerLines[2] = "beam 200 kV · typed"
-whole.quantification.footerLines[3] = "fit range 0.2–9.80777 keV (default; the axis end) · 24 px pooled (Whole map)"
+whole.quantification.footerLines[3] = "fit range 0.2–9.80614 keV (default; the axis end) · 24 px pooled (Whole map)"
 whole.quantification.footerLines[4] = "σ: counting only; model choice can move a weak line by more"
 whole.quantification.footerLines[5] = "σ is counting statistics at χ²ᵣ = 1; this fit is at 0.38 (Pearson)"
 whole.quantification.footerLines[6] = "k: computed: Bote-Salvat 2008 (NIST EPQ tables, PRA 77 042701), edges DHS xionUis.csv; not Velox's Brown-Powell default; omega: Krause 1979 (NIST EPQ Krause1979.csv); epsilon: EPQ getDefaultSDDProperties (Au 0.0 nm, Al 10.0 nm, Si dead layer 0.0 µm, Si 450.0 µm); generic SDD model, not a measured calibration of this detector; FFAST MACs; relative to Al; beam 200.0 keV (EPQ 249dd3f8 + Krause 1979 + FFAST); σ_k 20 % flat, 0 on the reference (Al)"
@@ -651,10 +651,10 @@ whole.quantification.fitSettings.elements[2] = "Si"
 whole.quantification.fitSettings.elements[3] = "Cu"
 whole.quantification.fitSettings.elements[4] = "O"
 whole.quantification.fitSettings.elements[5] = "Ga"
-whole.quantification.fitSettings.resolutionMnKaEV = 406053a685f5ed43 130.61407754929141
+whole.quantification.fitSettings.resolutionMnKaEV = 40605376a22700e0 130.60823161714416
 whole.quantification.fitSettings.beamEnergy = 4069000000000000 200
 whole.quantification.fitSettings.fitFrom = 3fc999999999999a 0.20000000000000001
-whole.quantification.fitSettings.fitTo = 40239d945918854d 9.8077724306519034
+whole.quantification.fitSettings.fitTo = 40239cbdce664d63 9.8061356067543723
 whole.quantification.fitSettings.background.continuum.beamEnergy = 4069000000000000 200
 whole.quantification.fitSettings.background.continuum.edges: n 1 sum 3ff8f41f212d7732 1.5596000000000001 fnv 81bcb0c79f3d52e2
 whole.quantification.fitSettings.background.continuum.edges[0] = 3ff8f41f212d7732 1.5596000000000001
@@ -669,11 +669,11 @@ whole.quantification.fitSettings.lineTail = nil
 whole.quantification.fitSettings.lineWeights = .exspy
 whole.quantification.sumEscapeCounts = nil
 whole.quantification.fitRange.fromKeV = 3fc999999999999a 0.20000000000000001
-whole.quantification.fitRange.toKeV = 40239d945918854d 9.8077724306519034
+whole.quantification.fitRange.toKeV = 40239cbdce664d63 9.8061356067543723
 whole.quantification.fitRange.source = .defaultReach
 whole.quantification.fitRange.axisEndKeV = 402380c28065dbf0 9.7514839290942916
 whole.quantification.fitRange.beamEnergyKeV = 4069000000000000 200
-whole.quantification.fitRange.reachKeV = 40239d945918854d 9.8077724306519034
+whole.quantification.fitRange.reachKeV = 40239cbdce664d63 9.8061356067543723
 whole.quantification.fitRange.typedKeV = nil
 whole.quantification.rangeSensitivity = nil
 whole.quantification.unlistedCheck = nil
@@ -681,7 +681,7 @@ whole.quantification.unlistedCheckPending = false
 whole.quantification.abundanceCaveat = nil
 whole.quantification.appliedSumEscape = nil
 whole.quantification.continuumDeadLayerMicrons = nil
-whole.csv-fnv = 2386ee1d8a1aef5f
+whole.csv-fnv = 2fce5257efdb3a2d
 whole.rangeSensitivity = nil
 whole.unlistedProposal.candidates: n 0 sum 0000000000000000 0 fnv cbf29ce484222325
 whole.unlistedProposal.sumPeaks: n 0 sum 0000000000000000 0 fnv cbf29ce484222325
@@ -710,24 +710,24 @@ whole.unlistedProposal.notes[5] = "Look-elsewhere: 1 candidates were tested, so 
 whole.unlistedProposal.notes[6] = "a weak line next to Al Kα reads low by ≈ 300 counts per pooled spectrum on synthetic data (cause: the Al Kα incomplete-charge tail, unmodelled until a tail is measured on an Al matrix, `TailEstimate`); unmeasured on real data. Weak-line bias measured on synthetic data: Δ = −270 ± 31 counts at 900 planted Mg Kα (generator A, no tail: continuum–line projection) and −272 ± 23 at 882 (generator S); −325 ± 38 at 3000 (A) and −226 ± 22 at 2899 (S)"
 whole.unlistedProposal.passes = 3
 whole.unlistedProposal.settled = true
-whole.unlistedProposal.reducedChiSquared = 3fd88696d3af7cf8 0.38321467087185068
+whole.unlistedProposal.reducedChiSquared = 3fd88645086a9df1 0.38319516965790884
 whole.unlistedCheck.candidates: n 0 sum 0000000000000000 0 fnv cbf29ce484222325
 whole.unlistedCheck.moves: n 0 sum 0000000000000000 0 fnv cbf29ce484222325
 whole.unlistedCheck.largest = nil
 whole.unlistedCheck.failure = nil
 whole.withholding: array 2
-whole.withholding[0]: n 4 sum 4059000000000001 100.00000000000001 fnv 8839591c4accd255
-whole.withholding[0][0] = 40555518dce738f0 85.329642511180054
-whole.withholding[0][1] = 4014a1ecc3aa242b 5.1581297466846463
-whole.withholding[0][2] = 40217a437cddaf89 8.7387961407291801
-whole.withholding[0][3] = 3fe8bff3a1376e42 0.77343160140612377
-whole.withholding[1]: n 4 sum 40812044324652b1 548.03329901637892 fnv 3bf34c80816b9918
-whole.withholding[1][0] = 407d361888d229a7 467.38098985762412
-whole.withholding[1][1] = 403b7e117b1a077f 27.492454236845784
-whole.withholding[1][2] = 40483983ddea3400 48.449336757046694
-whole.withholding[1][3] = 4012d79212e5305e 4.7105181648622345
+whole.withholding[0]: n 4 sum 4058ffffffffffff 99.999999999999986 fnv 5a4acf0338d7e6a0
+whole.withholding[0][0] = 40555506e29dbbc0 85.328545240437052
+whole.withholding[0][1] = 4014a193be64fc62 5.157790160096825
+whole.withholding[0][2] = 40217a4a6153be4f 8.7388487257695981
+whole.withholding[0][3] = 3fe8cb4aa8be5792 0.77481587369651295
+whole.withholding[1]: n 4 sum 4081207d4ee0cb82 548.06118560429627 fnv b06c36caa5b115
+whole.withholding[1][0] = 407d365e2d6f4dc8 467.39799254873333
+whole.withholding[1][1] = 403b7df3926a9189 27.491997862832736
+whole.withholding[1][2] = 404839db974781d6 48.452013883510219
+whole.withholding[1][3] = 4012e07110abfa2a 4.7191813092199855
 whole.withholding.caveat = nil
-whole.csv-withholding-fnv = 3f670bb26a477b72
+whole.csv-withholding-fnv = ebc6d841fba70520
 region-locked-axis.quantification.method.version = 1
 region-locked-axis.quantification.method.estimator = .leastSquares
 region-locked-axis.quantification.method.background = .empiricalWithAlEdge
