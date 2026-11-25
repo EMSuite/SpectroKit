@@ -22,9 +22,9 @@ let package = Package(
     ],
     dependencies: [
         // 0.12.0 is the first tag with the Velox acquisition fields the velox-tiny golden records.
-        .package(url: "https://github.com/mac4DSTEM/FormatoKit", "0.12.0"..<"1.0.0"),
+        .package(url: "https://github.com/EMSuite/FormatoKit", "0.12.0"..<"1.0.0"),
         // SpectroEELS runs its Fourier deconvolutions on ImagoCore's exact-length FFT; 0.6.1 is the first tag with it.
-        .package(url: "https://github.com/mac4DSTEM/ImagoKit", "0.6.1"..<"1.0.0"),
+        .package(url: "https://github.com/EMSuite/ImagoKit", "0.6.1"..<"1.0.0"),
     ],
     targets: [
         // Plain-C wrappers over the four Accelerate LAPACK routines `FitLinearAlgebra` calls. ACCELERATE_NEW_LAPACK is
