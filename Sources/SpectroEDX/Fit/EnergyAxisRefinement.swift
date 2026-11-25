@@ -12,6 +12,14 @@
 //  by Nelder-Mead in units of (1 eV, 0.01 %, 1 eV) so one simplex step is comparable in each. The
 //  channel range is held fixed on the FILE axis, so the data set does not change between trials.
 //
+//  THE LOW-ENERGY FLOOR (#63). The residual is read only from `AxisRefinementSettings.lowestEnergyKeV` (0.6 keV) up. Below it
+//  the measured C and O K-alpha centroids sit 6 to 9 eV under their table energies (the line shape at low energy: incomplete
+//  charge collection and window absorption skew the peak, and the model's lines are Gaussian), so on a spectrum where they
+//  are strong the refinement tilted the axis through them: on MgO (Leeds Mg-Al-Ca data, doi 10.5518/1826) offset +11.4 eV,
+//  gain -0.62 % and Cu K-alpha 52 eV low. A planted spectrum with C and O 7 eV low reproduces it (+11.7 eV, -0.69 %, Cu
+//  -46 eV) and with the floor at 0.6 keV recovers the axis to 0.1 eV; with C and O at their table energies the floor
+//  changes nothing. The lines below the floor are still fitted, on the refined axis, by the pooled fit.
+//
 //  DEVIATION (eXSpy): eXSpy's `calibrate_energy_axis` refines ONE of resolution / scale / offset at a
 //  time on the alpha lines with a bounded nonlinear fit. Here the three are refined together, on
 //  every line of the model, because offset and gain are strongly correlated when only one is free.
@@ -23,7 +31,12 @@ import SpectroCore
 
 /// Which of the energy axis's offset, gain and the detector width the refinement adjusts, and how long it searches. Defaults are the
 /// library's choice (all three, 600 simplex iterations, tolerance 1e-12, widths between 20 and 500 eV, offset within +-200 eV and
-/// gain within +-5 % of the file's).
+/// gain within +-5 % of the file's, read from 0.6 keV up).
+///
+/// THE LOW-ENERGY FLOOR (0.14, #63). The refinement reads the channels from `lowestEnergyKeV` up (or from the fit's start when that
+/// is higher), so the C, N and O K-alpha lines, whose centroids sit several eV below their table energies, do not set the axis. A
+/// policy stored before it has no `lowestEnergyKeV` key and reads 0.6: a re-run can differ from its stored run where light
+/// lines were strong (the reason for the change).
 ///
 /// THE OFFSET AND GAIN BOUNDS (0.13.2). A spectrum with one strong line fixes two numbers (its channel and its width in channels)
 /// against three parameters, so the residual has a flat valley along which offset, gain and width trade; the simplex then walks
@@ -52,22 +65,27 @@ public nonisolated struct AxisRefinementSettings: Sendable, Equatable, Codable {
     public var maximumOffsetShiftEV = 200.0
     /// A trial relative gain shift whose size is at or above this is rejected. Default 0.05 (5 %).
     public var maximumGainShift = 0.05
+    /// The refinement reads channels at and above this energy, keV (and the fit's own start when higher). Default 0.6: below it the
+    /// C, N and O K-alpha centroids sit 6 to 9 eV under their table energies and would tilt the axis (#63). 0 reads the fit's range.
+    public var lowestEnergyKeV = 0.6
 
     public init(refineOffset: Bool = true, refineGain: Bool = true, refineResolution: Bool = true, maxIterations: Int = 600,
                 tolerance: Double = 1e-12, minimumResolutionEV: Double = 20, maximumResolutionEV: Double = 500,
-                maximumOffsetShiftEV: Double = 200, maximumGainShift: Double = 0.05) {
+                maximumOffsetShiftEV: Double = 200, maximumGainShift: Double = 0.05, lowestEnergyKeV: Double = 0.6) {
         self.refineOffset = refineOffset; self.refineGain = refineGain; self.refineResolution = refineResolution
         self.maxIterations = maxIterations; self.tolerance = tolerance
         self.minimumResolutionEV = minimumResolutionEV; self.maximumResolutionEV = maximumResolutionEV
         self.maximumOffsetShiftEV = maximumOffsetShiftEV; self.maximumGainShift = maximumGainShift
+        self.lowestEnergyKeV = lowestEnergyKeV
     }
 
     private enum CodingKeys: String, CodingKey {
         case refineOffset, refineGain, refineResolution, maxIterations, tolerance, minimumResolutionEV, maximumResolutionEV,
-             maximumOffsetShiftEV, maximumGainShift
+             maximumOffsetShiftEV, maximumGainShift, lowestEnergyKeV
     }
 
-    /// A policy stored before 0.13.2 has no offset or gain bound: it reads the defaults (see the type's note).
+    /// A policy stored before 0.13.2 has no offset or gain bound, and one stored before 0.14 no low-energy floor: each reads the
+    /// default (see the type's notes).
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         let defaults = AxisRefinementSettings()
@@ -77,7 +95,8 @@ public nonisolated struct AxisRefinementSettings: Sendable, Equatable, Codable {
                   minimumResolutionEV: try c.decode(Double.self, forKey: .minimumResolutionEV),
                   maximumResolutionEV: try c.decode(Double.self, forKey: .maximumResolutionEV),
                   maximumOffsetShiftEV: try c.decodeIfPresent(Double.self, forKey: .maximumOffsetShiftEV) ?? defaults.maximumOffsetShiftEV,
-                  maximumGainShift: try c.decodeIfPresent(Double.self, forKey: .maximumGainShift) ?? defaults.maximumGainShift)
+                  maximumGainShift: try c.decodeIfPresent(Double.self, forKey: .maximumGainShift) ?? defaults.maximumGainShift,
+                  lowestEnergyKeV: try c.decodeIfPresent(Double.self, forKey: .lowestEnergyKeV) ?? defaults.lowestEnergyKeV)
     }
 }
 
@@ -118,7 +137,10 @@ package nonisolated enum EnergyAxisRefinement {
     ) throws -> AxisRefinementResult {
         try SpectroCancellation.check(cancelled)
         guard counts.count == fileAxis.size else { throw EDSFitError.lengthMismatch }
-        let channels = fileAxis.fitChannels(from: settings.fitFrom, to: settings.fitTo)
+        // From the low-energy floor up (the light lines' centroids would tilt the axis, #63), or the fit's start when higher.
+        let lowest = options.lowestEnergyKeV > 0 ? options.lowestEnergyKeV : nil
+        let from = lowest.map { f in settings.fitFrom.map { max($0, f) } ?? f } ?? settings.fitFrom
+        let channels = fileAxis.fitChannels(from: from, to: settings.fitTo)
         guard !channels.isEmpty else { throw EDSFitError.noChannels }
         try EDSFit.validate(settings.referenceShapes, axis: fileAxis,
                             model: EDSLineModel.build(elements: settings.elements, axis: fileAxis, beamEnergy: settings.beamEnergy,
