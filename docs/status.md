@@ -17,7 +17,8 @@ Live:
 - **SpectroCore**: line-profile pooling, display smoothing, sparse regions; a spectrum image's counts a band of scan rows at a time
   (`countRows`, exact, dense or sparse), for a writer that streams the cube.
 
-Since 0.16.0: 0.17.0 adds `countRows`, which hands out a spectrum image's counts a band of scan rows at a time. What each
+Since 0.16.0: 0.17.0 adds `countRows`, which hands out a spectrum image's counts a band of scan rows at a time; 0.17.1 refuses a
+power-law extrapolation past half the machine's memory before allocating it and takes FormatoKit and ImagoKit from the EMSuite org. What each
 version changed, with the migration notes: `CHANGELOG.md`.
 
 Parity row by row: `docs/parity.md` (92 rows: 58 present, 11 partial, 23 missing);
