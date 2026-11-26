@@ -8,6 +8,13 @@ each entry from the merged pull requests' titles; a breaking change's Migration 
 Every quantification and thickness result reports `validation: "none"`: agreement with exSpy and HyperSpy is not validation on a
 sample of known composition.
 
+## [0.17.2](https://github.com/EMSuite/SpectroKit/compare/0.17.1...0.17.2) (2026-11-26)
+
+
+### Bug Fixes
+
+* the EDX axis refinement reads from 0.6 keV, so C and O K-alpha no longer tilt the gain ([#145](https://github.com/EMSuite/SpectroKit/issues/145)) ([b764354](https://github.com/EMSuite/SpectroKit/commit/b7643544c3d9fafa0fa1ebeb002ec388985e51d0))
+
 ## [0.17.1](https://github.com/EMSuite/SpectroKit/compare/0.17.0...0.17.1) (2026-11-25)
 
 
