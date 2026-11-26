@@ -527,6 +527,42 @@ struct SpectroscopyFitTests {
         #expect(isEqual(r.gainShift, 1 / 1.002 - 1, accuracy: 5e-4))
     }
 
+    /// #63: C and O K-alpha whose centroids sit 7 eV below their table energies (as measured on the Leeds Mg-Al-Ca data) do not
+    /// set the axis. A MgO-like spectrum on a 5 eV/channel axis from -0.25 keV: strong O K-alpha, C K-alpha, Mg K-alpha and a weak
+    /// Cu K-alpha, the file axis the truth. With the refinement reading from 0.2 keV the light lines tilted the axis (Python
+    /// replica of the method: offset +11.7 eV, gain -0.69 %, Cu K-alpha 46 eV low; the issue measured +11.4 eV, -0.62 %, 52 eV on
+    /// the real file); from the 0.6 keV floor the axis stays within 1 eV and 0.02 % and Cu K-alpha within 2 eV. With the floor at 0
+    /// (the old reading) the same spectrum moves Cu K-alpha by more than 10 eV, which is what the floor is for.
+    /// Mutation: the floor not applied to the channels - red.
+    @Test func testLightLineCentroidsBelowTheirTableEnergiesDoNotSetTheAxis() throws {
+        let axis = EnergyAxis(offset: -0.250, scale: 0.005, size: 4096)
+        let heavy = Self.expected(axis: axis, elements: ["Mg", "Cu"], resolution: 130, beam: 200,
+                                  areas: ["Mg_Ka": 250_000, "Cu_Ka": 20_000], continuumTotal: 400_000)
+        // C and O planted on an axis 7 eV higher: on the true axis their lines sit 7 eV below the table energies.
+        let lowLight = EnergyAxis(offset: axis.offset + 0.007, scale: axis.scale, size: axis.size)
+        let light = Self.expected(axis: lowLight, elements: ["C", "O"], resolution: 130, beam: 200,
+                                  areas: ["O_Ka": 300_000, "C_Ka": 30_000], continuumTotal: 0)
+        let counts = Self.poissonSpectrum(zip(heavy, light).map { $0 + $1 }, seed: 63)
+        let settings = FitSettings.standard(elements: ["C", "O", "Mg", "Cu"], axis: axis, resolutionMnKaEV: 130, beamEnergy: 200)
+        #expect(settings.fitFrom == 0.2, "the default fit starts below O K-alpha")
+        func cuKaShiftEV(_ r: AxisRefinementResult) -> Double {
+            let channel = (8.0478 - axis.offset) / axis.scale
+            return (r.refinedAxis.offset + r.refinedAxis.scale * channel - 8.0478) * 1000
+        }
+        let r = try EnergyAxisRefinement.refine(counts: counts, fileAxis: axis, fileResolutionMnKaEV: 130, settings: settings)
+        note("#63 floor 0.6 keV: offset \(r.offsetShiftEV) eV, gain \(r.gainShift * 100) %, Cu Ka \(cuKaShiftEV(r)) eV, converged \(r.converged)")
+        #expect(r.converged && r.parametersAtBound.isEmpty)
+        #expect(abs(r.offsetShiftEV) < 1, "offset \(r.offsetShiftEV) eV")
+        #expect(abs(r.gainShift) < 2e-4, "gain \(r.gainShift * 100) %")
+        #expect(abs(cuKaShiftEV(r)) < 2, "Cu K-alpha \(cuKaShiftEV(r)) eV off on the refined axis")
+
+        let old = try EnergyAxisRefinement.refine(counts: counts, fileAxis: axis, fileResolutionMnKaEV: 130, settings: settings,
+                                                  options: AxisRefinementSettings(lowestEnergyKeV: 0))
+        note("#63 no floor: offset \(old.offsetShiftEV) eV, gain \(old.gainShift * 100) %, Cu Ka \(cuKaShiftEV(old)) eV")
+        #expect(abs(cuKaShiftEV(old)) > 10, "without the floor the light lines tilt the axis (the finding)")
+        #expect(AxisRefinementSettings().lowestEnergyKeV == 0.6)
+    }
+
     // MARK: 9. Escape peaks and reference shapes
 
     @Test func testEscapePeaksAreFittedAndMgAlSiHaveNone() throws {

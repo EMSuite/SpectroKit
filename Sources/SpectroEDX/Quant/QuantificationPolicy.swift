@@ -227,6 +227,9 @@ public nonisolated struct FitPolicy: Sendable, Equatable, Codable {
             || !(axisRefinement.maximumGainShift.isFinite && axisRefinement.maximumGainShift > 0 && axisRefinement.maximumGainShift < 1) {
             return "The axis refinement needs a finite, positive bound on the offset shift, and a gain shift bound between 0 and 1."
         }
+        if !(axisRefinement.lowestEnergyKeV.isFinite && axisRefinement.lowestEnergyKeV >= 0) {
+            return "The axis refinement's lowest energy must be a number of 0 keV or more."
+        }
         return nil
     }
 }
