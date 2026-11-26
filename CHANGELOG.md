@@ -8,6 +8,14 @@ each entry from the merged pull requests' titles; a breaking change's Migration 
 Every quantification and thickness result reports `validation: "none"`: agreement with exSpy and HyperSpy is not validation on a
 sample of known composition.
 
+## [0.17.1](https://github.com/EMSuite/SpectroKit/compare/0.17.0...0.17.1) (2026-11-25)
+
+
+### Bug Fixes
+
+* a power-law extrapolation past half the machine's memory is refused before it is allocated ([#142](https://github.com/EMSuite/SpectroKit/issues/142)) ([8cf6bc6](https://github.com/EMSuite/SpectroKit/commit/8cf6bc62011fc1ffe8ac32b2cb18c3fdc270bc80))
+* the FormatoKit and ImagoKit dependencies point at the EMSuite org ([#147](https://github.com/EMSuite/SpectroKit/issues/147)) ([f224541](https://github.com/EMSuite/SpectroKit/commit/f2245410bf9c5e2cd309032a0a72865d1834b198))
+
 ## [0.17.0](https://github.com/EMSuite/SpectroKit/compare/0.16.0...0.17.0) (2026-11-24)
 
 
