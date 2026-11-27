@@ -18,8 +18,9 @@
 //  (SEMEDSParityTests).
 //
 //  DEVIATIONS from eXSpy (each the kit's, unchanged here): H and He get no line (`XRayLines.notRealLines`); a line whose width the
-//  Fiori-Newbury law cannot give throws `SpectralLineError.widthUndefined` where eXSpy's `math.sqrt` raises; a NaN window edge throws
-//  `EnergyAxisError.notANumber`.
+//  Fiori-Newbury law cannot give throws `SpectralLineError.widthUndefined`, where eXSpy's `math.sqrt` raises on a negative argument
+//  and gives NaN windows for a NaN resolution; a NaN window edge throws `WindowIntensityError.axis(.notANumber)`, where eXSpy 0.3.2
+//  clamps a NaN integration edge to the axis end and raises only on a NaN background edge.
 //
 
 import Foundation
