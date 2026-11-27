@@ -60,6 +60,11 @@ Read <doc:Quantifying-an-EDX-spectrum> for the walk from a summed spectrum to a 
 - ``UnlistedLineChecker``
 - ``UnlistedLineCheck``
 
+### exSpy's window path on one spectrum
+
+- ``EDSWindowPath``
+- ``EDSWindowPathError``
+
 ### X-ray lines and windows
 
 - ``XRayLines``
