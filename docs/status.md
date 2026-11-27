@@ -1,4 +1,4 @@
-# Status: SpectroKit 0.17.2 <!-- x-release-please-version -->
+# Status: SpectroKit 0.17.3 <!-- x-release-please-version -->
 
 It builds on FormatoKit `"0.12.0"..<"1.0.0"` and ImagoKit `"0.6.1"..<"1.0.0"`, against HyperSpy 2.4.0 and
 exSpy 0.3.2 / 7185a4d1. macOS 15 and later (iOS was dropped from `Package.swift` in 0.13.0; it never built there).
