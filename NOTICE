@@ -38,6 +38,16 @@ with eXSpy is not validation.
 The element table in Sources/SpectroEDX/Quant/QuantElementData.swift
 (atomic weights and densities) comes from eXSpy's elements data (GPL-3.0-or-later).
 
+Sources/SpectroEDX/EDSWindowPath.swift (exSpy's window path for one SEM spectrum: lines, windows,
+intensities, the acquisition defaults, Cliff-Lorimer) was merged from Electron Microscopy Studio
+(https://github.com/EMSuite/Electron-Microscopy-Studio, GPL-3.0-only, commit e7212f9, SEMEDSLines.swift)
+onto the functions above; it ports eXSpy 0.3.2 and HyperSpy 2.5.0 (GPL-3.0-or-later), the same
+functions as the commit named above. Its test bundles in Tests/SpectroEDXTests/Fixtures/sem/references
+hold eXSpy 0.3.2's outputs (GPL-3.0-or-later), written by the app's tools/parity/sem/emit.py and copied
+byte for byte; their input, Tests/SpectroEDXTests/Fixtures/sem/fixtures/exspy_EDS_SEM_TM002.hspy
+(sha256 b5a5828dc694c7ed6e33745b7022594f48457e33140fb8d7371472fe18b6b359), is eXSpy's demo spectrum
+EDS_SEM_TM002 (the BAM EDS-TM002 reference material, GPL-3.0-or-later), copied unchanged.
+
 The file readers (the Velox EMD reader, the DM4 reader with its EDS and EELS spectrum images, the HDF5 lock) moved
 to FormatoKit (https://github.com/EMSuite/FormatoKit, GPL-3.0-only) at SpectroKit 0.4.0, with their notices,
 their rosettasciio comparison and their fixtures. SpectroKit depends on FormatoKit 0.2.1.

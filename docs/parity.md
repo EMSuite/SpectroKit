@@ -66,8 +66,8 @@ absorption loop must stop on the same iteration.
 
 | state | EDS | EELS | shared | all |
 |---|---|---|---|---|
-| present | 24 | 24 | 10 | 58 |
-| partial | 9 | 2 | 0 | 11 |
+| present | 25 | 24 | 10 | 59 |
+| partial | 8 | 2 | 0 | 10 |
 | missing | 13 | 9 | 1 | 23 |
 | not planned | 4 | 4 | 0 | 8 |
 | rows | 50 | 39 | 11 | 100 |
@@ -77,7 +77,7 @@ recounted after the 0.9.0 EELS rows were added, so the EELS column moves by more
 four rows (sum and escape peaks, k-factor import, sigma on wt% and at%, the per-region result). The three-column tables above (CI portability, with the new line-profile,
 smoothing and sparse-transport rows) are not part of this count.
 
-Of the present rows: BIT 10, TOL 33, DEV 8, NOPIN 5, and two rows with their own code (EXACT, NP). By priority: study 67 rows
+Of the present rows: BIT 10, TOL 34, DEV 8, NOPIN 5, and two rows with their own code (EXACT, NP). By priority: study 67 rows
 (52 present, 15 partial or missing), useful 25,
 not planned 8.
 
@@ -106,7 +106,7 @@ differ from raw SciPy where the CPU-dependent tie rule says so.
 | exSpy / HyperSpy | SpectroKit | state | code | priority | upstream tolerance (test file) | evidence |
 |---|---|---|---|---|---|---|
 | `EDSSpectrum.set_elements`, `add_elements` | element lists are plain input (`FitSettings.elements`, `QuantificationMethod.elements`, `ElementWindows.Pick`); no metadata tree | partial | PART | useful | no numeric test (`tests/signals/test_eds_sem.py::test_add_elements`, names only) | H and He are dropped where exSpy keeps them: SpectroEDXTests/SpectroscopyCoreTests `testHeliumAndHydrogenAreDroppedWhereExspyKeepsThem`; the bookkeeping itself is not compared |
-| `EDSSpectrum.set_lines`, `add_lines` (`only_one`, `only_lines`) | `XRayLines.defaultLines` (package); the public `ElementWindows.build(picks:)` defaults to a different rule (`ElementWindows.defaultFamily`: K up to 20 keV, else L) | present | DEV | study | no numeric test (`test_eds_sem.py::test_add_lines`, names only) | `testDefaultLineChoiceMatchesExspy` (lists equal on 2 axes x 4 beam energies, for `defaultLines`); the deviation of the public default is named in `ElementWindows` |
+| `EDSSpectrum.set_lines`, `add_lines` (`only_one`, `only_lines`) | `XRayLines.defaultLines`, public as `EDSWindowPath.lines(forElements:axis:beamEnergyKeV:onlyOne:onlyLines:)`; the public `ElementWindows.build(picks:)` defaults to a different rule (`ElementWindows.defaultFamily`: K up to 20 keV, else L) | present | DEV | study | no numeric test (`test_eds_sem.py::test_add_lines`, names only) | `testDefaultLineChoiceMatchesExspy` (lists equal on 2 axes x 4 beam energies, for `defaultLines`); SEMEDSParityTests on TM002 at 5, 10, 20 and 30 kV (exact, below); the deviation of the public default is named in `ElementWindows` |
 | `utils.eds.get_xray_lines` (`weight_threshold`, `energy_range`, `only_lines`) | `XRayLines.lines(of:)`, `.all`, `.linesInRange` | partial | PART | useful | `tests/misc/test_eds.py` (names, energies; exact) | `testDefaultLineChoiceMatchesExspy`, `testEmptyOnlyLinesIsNoFilter`; the weight and energy filters are not exposed |
 | `utils.eds.get_xray_lines_near_energy`, `print_lines_near_energy`, `print_lines`, `EDSSpectrum.print_lines*` | not in Sources: the rule is re-implemented inside the test over `XRayLines.all` | missing | NO | useful | `tests/misc/test_eds.py::test_xray_lines_near_energy` (exact line lists) | SpectroEDXTests/PeakGateTests `testP1LineLookupEqualsExSpy` (360 lookups equal) checks the table through that rule |
 | `material.elements` X-ray lines (Chantler energies, EPQ weights) | `XRayLines.all` (947 rows, Z 1...92), `XRayLines.line(_:)` | present | BIT | study | exact table; no tolerance (`tests/misc/test_eds_utils.py`) | SpectroEDXTests/LineTableParityTests `testEveryLineOfTheTableEqualsExSpy`: all 947 rows (Z, line, energy, weight, order) `==` exSpy's own loader (`tools/edx-lines/pins.py`); also SpectroEDXTests/SpectroscopyCoreTests `testLineTableIsExspyVerbatim` and SpectroEDXTests/PeakGateTests `testP1LineEnergyAndWidthEqualExSpy` |
@@ -122,7 +122,7 @@ differ from raw SciPy where the CPU-dependent tie rule says so.
 | `get_lines_intensity` (net counts of integration windows less background windows) | `ElementWindows.build(picks:...)`, `ElementWindows.netCounts`, `.maps`, `.integratedMaps` (public); sigma added | present | BIT | study | `test_eds_tem.py::test_intensity` atol 1e-1; uint input rtol 0.03; `test_eds_sem.py::test_background_substraction` atol 1e-3 | FePt and TM002 net counts equal (`testFePtPins`, `testTM002Pins`, `==` on integer sums); WindowGateTests `testLineIntensitiesEqualExSpyOnEveryPlantedSpectrum` (26 280 values, 4e-16 relative). Two checked lines of one element closer than a window are clipped (`clipOverlaps`), which exSpy does not do |
 | `estimate_integration_windows` | `WindowIntensity.integrationWindows` (package), used by `ElementWindows.build` at width 2.0 | present | BIT | study | `test_eds_sem.py::test_estimate_integration_windows` atol 1e-2 | `testFePtPins`, `testTM002Pins` (windows `==`), WindowGateTests `testWindowsEqualExSpy` |
 | `estimate_background_windows` (with the merge of overlapping windows) | `BackgroundWindows.estimate`, `.merge` (package), used at `line_width` [2,2], `windows_width` 1 | present | BIT | study | `test_eds_sem.py::test_background_substraction` atol 1e-3 | `testFePtPins`, `testTM002Pins` (merged windows at [2,2] and [5,2]), `testMgAlSiMergedBackgroundSitsOnSiliconsFlank`, `testWindowsEqualExSpy` |
-| the window parameters of the three rows above (`integration_window_factor`, `line_width`, `windows_width`, `xray_lines`) | not settable from the public API | partial | PART | study | as the three rows above | the package functions take them and are tested at [5,2] and at 2.1 FWHM (`testTM002Pins`) |
+| the window parameters of the three rows above (`integration_window_factor`, `line_width`, `windows_width`, `xray_lines`) | `EDSWindowPath.integrationWindows(_:width:resolutionMnKaEV:)`, `.backgroundWindows(_:lineWidth:windowsWidth:resolutionMnKaEV:)`, `.intensities(counts:axis:integrationWindows:backgroundWindows:)` (public), over the package functions | present | TOL | study | as the three rows above | `testTM002Pins` at [5,2] and 2.1 FWHM; SEMEDSParityTests on the m7 TM002 bundles at [5,2], [2,2] and 2.1 FWHM (rtol 1e-7, below) |
 | `EDSSpectrum.sum` | `SpectrumImage.sum(mask:)`, `windowSums` (dense and sparse); exact UInt64; live time is passed through, not summed | present | NOPIN | study | `test_eds_tem.py::test_sum_live_time*` allclose defaults | CountsGateTests `testC1*`, `testC2*`, `testC3NoWrapAndNoLiveTimeProduct`: equal to a NumPy decode and planted draws; exSpy's `sum` was only probed (design note edx-stage-gates, archived in the suite's private folder, section 3, G-C) |
 | `EDSSpectrum.rebin` | none | missing | NO | study | `test_eds_tem.py::test_rebin_live_time`, `test_offset_after_rebin` (allclose defaults) |  |
 | `LazyEDS*Spectrum` | none (a sparse store exists instead) | not planned | NP | not planned: lazy dask signals; the kit's sparse store is the lazy form | none |  |
@@ -236,6 +236,28 @@ differ from raw SciPy where the CPU-dependent tie rule says so.
 | `EELSArctan`, `DoublePowerLaw`, `Vignetting`, `VolumePlasmonDrude` | none | missing | NO | useful | `test_EELSarctan.py`, `test_double_power_law.py` allclose defaults, `test_volume_plasmon_drude.py` rtol 1e-6 |  |
 | `SEE`, `PESCoreLineShape`, `PESVoigt` | none | not planned | NP | not planned: photoelectron and secondary-electron components, not EELS | `test_pes_*.py` |  |
 | `exspy.data` EELS datasets, `eelsdb` | none | not planned | NP | not planned: network database and bundled datasets | `tests/data/test_eelsdb.py` |  |
+
+## SEM-EDS (exspy's window path)
+
+The window path of one SEM spectrum as Electron Microscopy Studio ran it in its own `SEMEDSLines` until SpectroKit#131 merged it
+here: `EDSWindowPath` (public) over the kit's own line table, windows, channel rule and Cliff-Lorimer, so there is one
+implementation. References: the app's bundles `m7/eds-lines-tm002` (its figure F16) and `m7/eds-quant-tm002` (F17, with exspy's
+element table as its `db_` arrays), written by the app's `tools/parity/sem/emit.py` (exspy 0.3.2, HyperSpy 2.5.0) on the BAM TM002
+spectrum and copied byte for byte with their input into `Tests/SpectroEDXTests/Fixtures/sem` (equal sha256); tests in
+SpectroEDXTests/SEMEDSParityTests. The tolerances are the app's rows, unchanged. Line width: Fiori and Newbury 1978; k-factor ratio:
+Cliff and Lorimer 1975. This table is not part of the seven-column count above; the rows it touches there are named in them.
+
+| Function | Reference | Test | Tolerance | Notes |
+|---|---|---|---|---|
+| `XRayLines.all`, `XRayLines.line(_:)`, `QuantElementData` | `exspy._misc.elements.elements` (the app's `XrayLineDatabase`) | `testTheAppsLineTableIsTheKits` | exact | all 947 lines (energy, weight, Z) and 95 elements (Z, atomic weight) equal; no line in one table that the other lacks; Li, Np, Pu and Am have no lines in either. The difference is in the choice, not the table: `lines(of:)` gives H and He no line (the DEVIATION in `XRayLines`) |
+| `EDSWindowPath.lines(forElements:axis:beamEnergyKeV:)` | `EDSSpectrum._get_lines_from_elements` (`add_lines()`) | `testFigureF16…`, `testLinesFollowTheBeamEnergy…` | exact | Kα/Lα/Mα in range, the first below half the beam energy; an element without lines adds none (exspy raises); H and He add none where exspy adds `H_Ka`, `He_Ka` |
+| `EDSWindowPath.linesInSpectralRange` | `_get_xray_lines_in_spectral_range` | `testRangeAndRefusals` | exact | strictly inside (axis low, min(axis high, beam)); the rest in order |
+| `XRayLines.fwhm(resolutionMnKaEV:atEnergy:)` | `get_FWHM_at_Energy` | `testFigureF17…` | rtol 1e-7 | keV; nil (a thrown `SpectralLineError.widthUndefined` in the windows) where exspy's `math.sqrt` raises |
+| `EDSWindowPath.integrationWindows`, `.backgroundWindows` | `estimate_integration_windows`, `estimate_background_windows` | `testFigureF16…`, `testDefaultBackgroundWindows…` | rtol 1e-7 | exspy's in-place merge of overlapping windows (`BackgroundWindows.merge`): with (5, 2) on TM002 every line takes C Kα's left window |
+| `EnergyAxis.index(of:)`, `.channelRange(from:to:)` (package) | HyperSpy `UniformDataAxis.value2index`, `_get_array_slices` | `testChannelRoundingIsHyperSpys` | exact | the same rule as the app's: truncation at 1e-12 channels, half a channel towards zero at a non-negative energy and away from zero at a negative one; a NaN edge throws `notANumber` where the app's rule took it as off the axis |
+| `EDSWindowPath.intensities` | `get_lines_intensity` | `testFigureF16…`, `testExspyDocstringIntensities` | rtol 1e-7 (measured bit-equal) | Double counts, the channels of `WindowIntensity.resolve`; equal to the kit's integer sums on TM002. A window off the axis throws where HyperSpy raises; a window narrower than one channel sums no channel, as exspy's slice does (the app refused it) |
+| `EDSWindowPath.cliffLorimer(intensities:kFactors:singleLine:)`, `EDXQuantification.weightToAtomic` | `quantification_cliff_lorimer` (× 100), `material.weight_to_atomic` | `testFigureF17…`, `testCliffLorimerFloor…` | rtol 1e-7 | no absorption correction. Two named routes: `.exspyHundredPercent` is exspy's raw arithmetic, the one F17 pins (one line above the 0.1-count floor is 100 %, none gives zeros); `.refuse`, the kit's default everywhere (`EDXQuantification.quantify`), throws `needTwoLines` there. On TM002 both, and `EDXQuantification.quantify`, give F17's numbers |
+| `EDSWindowPath.Conditions`, `.takeOffAngleDeg` | `get_take_off_angle` / `take_off_angle`, `EDSConfig` defaults | `testTM002Conditions…`, `testConditionsTakeExspysDefaults` | rtol 1e-7 | exspy's defaults (130 eV, 35°, 0°, 0°) for what a file leaves out; `EDXQuantification.takeOffAngle` keeps its own rule (every angle stated) |
 
 ## Shared numerics (HyperSpy, SciPy, NumPy) that the rows above stand on
 
