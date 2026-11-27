@@ -41,7 +41,7 @@ let package = Package(
     name: "MyTool",
     platforms: [.macOS(.v15)],
     dependencies: [
-        .package(url: "https://github.com/EMSuite/SpectroKit", from: "0.17.2"), // x-release-please-version
+        .package(url: "https://github.com/EMSuite/SpectroKit", from: "0.17.3"), // x-release-please-version
     ],
     targets: [
         .executableTarget(name: "MyTool", dependencies: [

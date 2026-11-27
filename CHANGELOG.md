@@ -8,6 +8,13 @@ each entry from the merged pull requests' titles; a breaking change's Migration 
 Every quantification and thickness result reports `validation: "none"`: agreement with exSpy and HyperSpy is not validation on a
 sample of known composition.
 
+## [0.17.3](https://github.com/EMSuite/SpectroKit/compare/0.17.2...0.17.3) (2026-11-27)
+
+
+### Fixtures and tests
+
+* the EDX matrix checks exSpy's window route end to end on 288 planted spectra of twelve materials ([#151](https://github.com/EMSuite/SpectroKit/issues/151)) ([40433a8](https://github.com/EMSuite/SpectroKit/commit/40433a8fc30e1093a945b4c48c12e34fd9c51c31))
+
 ## [0.17.2](https://github.com/EMSuite/SpectroKit/compare/0.17.1...0.17.2) (2026-11-26)
 
 
