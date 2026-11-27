@@ -625,7 +625,7 @@ public nonisolated enum PooledQuantifier {
 
     // MARK: Absorption preconditions
 
-    package static func geometry(_ method: QuantificationMethod, _ meta: SpectrumImageMetadata) -> Result<FourDetectorGeometry, QuantificationRefusal> {
+    package static func geometry(_ meta: SpectrumImageMetadata) -> Result<FourDetectorGeometry, QuantificationRefusal> {
         if meta.origin == .gmsDM4 {
             // A GMS file names one detector: one azimuth, one elevation (`EDS.Detector Info.*`), and the stage tilt (`Microscope
             // Info.Stage Position.Stage Alpha/Beta`), the geometry exSpy's `take_off_angle` computes from (mac4DSTEM#168). Each
@@ -667,7 +667,7 @@ public nonisolated enum PooledQuantifier {
                                        _ tables: QuantificationTables?) -> AbsorptionPlan {
         guard method.absorptionCorrection else { return AbsorptionPlan(status: .off) }
         let g: FourDetectorGeometry
-        switch geometry(method, meta) {
+        switch geometry(meta) {
         case .failure(let e): return AbsorptionPlan(status: .refused(e.reason))
         case .success(let ok): g = ok
         }

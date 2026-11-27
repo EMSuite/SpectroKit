@@ -50,7 +50,7 @@ extension EDXQuantification {
     /// file's alpha and beta tilt, for `EDXAbsorptionSetting.takeOffDegrees`. Throws the reason (no tilt, a segment without
     /// azimuth, elevation or solid angle, a GMS file whose geometry is not read) in the pooled fit's own words.
     public static func takeOffDegrees(metadata: SpectrumImageMetadata) throws -> Double {
-        switch PooledQuantifier.geometry(QuantificationMethod(), metadata) {
+        switch PooledQuantifier.geometry(metadata) {
         case .failure(let why): throw why
         case .success(let g):
             let total = g.segments.reduce(0) { $0 + $1.weight }
