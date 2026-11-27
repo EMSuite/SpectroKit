@@ -54,6 +54,14 @@ The macos-26 runner at `0653404` refuted cross-CPU bit parity for the Savitzkyâ€
 | Sparse region transport (`MaskTransport.regions`) | regression tested | equals the dense `transport(mask:)` of each region: overlap, footprints, reports, pooled spectra exact; also against `registration-pins.json` (2e-12) |
 
 
+## End-to-end matrix
+
+`EDXMatrixTests` (`tools/edx-matrix/pins.py`) runs exSpy 0.3.2's whole window route on 288 planted spectra: 12 materials
+(Al-4Cu, SrTiO3, FePt, NiAl, Ti-6Al-4V, 316 steel, GaAs, SiGe, ZrO2, MgAl2O4, CuZn, AuAg), 10, 50 and 150 nm, two detector
+set-ups, 80 and 300 kV, and two doses. The chain covers take-off, windows with the merge, net counts, Cliff-Lorimer thin and
+with absorption, weight and atomic percent, and mass thickness. Each step is held to the tolerance in its row below, and the
+absorption loop must stop on the same iteration.
+
 ## Summary
 
 | state | EDS | EELS | shared | all |

@@ -1,6 +1,6 @@
 # Test fixtures
 
-One row per committed fixture under `Tests/*/Fixtures/` (304 files): its size and what writes it. Written by
+One row per committed fixture under `Tests/*/Fixtures/` (311 files): its size and what writes it. Written by
 `tools/fixtures/inventory.py`; do not edit by hand. Generators run in the Python reference `tools/reference/setup.sh` builds
 (`References/python`), from the repo root, as each script's header says.
 
@@ -18,38 +18,42 @@ A moved fixture is its own commit with the reason and a CHANGELOG line.
 | `SpectroCoreTests/Fixtures/registration-pins.json` | 39.1 KB | `tools/registration/pins.py` |  |
 | `SpectroCoreTests/Fixtures/spectro-golden/demo-edx-tiny-dm4.arrays.f64` | 42.8 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
 | `SpectroCoreTests/Fixtures/spectro-golden/demo-edx-tiny-dm4.arrays.json` | 3.5 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/demo-edx-tiny-dm4.txt` | 66.4 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/demo-edx-tiny-dm4.txt` | 67.1 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
 | `SpectroCoreTests/Fixtures/spectro-golden/demo-spectrum-fixture.txt` | 95.3 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/eds-proposer-sim.arrays.f64` | 95.4 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/eds-proposer-sim.arrays.json` | 2.0 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/eds-proposer-sim.txt` | 42.6 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/eds-proposer-sim.arrays.f64` | 95.5 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/eds-proposer-sim.arrays.json` | 2.9 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/eds-proposer-sim.txt` | 57.3 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
 | `SpectroCoreTests/Fixtures/spectro-golden/eds-realistic-l-sim.arrays.f64` | 319.6 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
 | `SpectroCoreTests/Fixtures/spectro-golden/eds-realistic-l-sim.arrays.json` | 7.7 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/eds-realistic-l-sim.txt` | 153.7 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/eds-realistic-l-sim.txt` | 158.3 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
 | `SpectroCoreTests/Fixtures/spectro-golden/eds-unlisted-sim.arrays.f64` | 181.3 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/eds-unlisted-sim.arrays.json` | 9.3 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/eds-unlisted-sim.txt` | 189.0 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/eds-unlisted-sim.arrays.json` | 9.9 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/eds-unlisted-sim.txt` | 205.3 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
 | `SpectroCoreTests/Fixtures/spectro-golden/eds-weakline-sim.arrays.f64` | 321.7 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/eds-weakline-sim.arrays.json` | 2.0 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/eds-weakline-sim.txt` | 30.8 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/eds-weakline-sim.arrays.json` | 2.2 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/eds-weakline-sim.txt` | 31.8 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
 | `SpectroCoreTests/Fixtures/spectro-golden/velox-tiny.arrays.f64` | 0.0 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
 | `SpectroCoreTests/Fixtures/spectro-golden/velox-tiny.arrays.json` | 0.1 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
-| `SpectroCoreTests/Fixtures/spectro-golden/velox-tiny.txt` | 15.8 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
+| `SpectroCoreTests/Fixtures/spectro-golden/velox-tiny.txt` | 16.0 KB | SpectroGoldenTests' recorder (`SPECTRO_GOLDEN_DIR=<dir> swift test --filter testRecordBaseline`; arrays: `SPECTRO_GOLDEN_ARRAYS_DIR=<dir> tools/test.sh --filter SpectroGoldenTests/testRecordPortableArrays`) |  |
 | `SpectroCoreTests/Fixtures/spectrum-tools-lineprofile-pins.json` | 83.3 KB | `tools/spectrum-tools/pins.py` |  |
 | `SpectroCoreTests/Fixtures/spectrum-tools-smoothing-pins.json` | 379.1 KB | `tools/spectrum-tools/pins.py` |  |
 | `SpectroCoreTests/Fixtures/velox-tiny.emd` | 43.6 KB | `tools/edx-planted/make_velox_tiny.py` |  |
-| `SpectroEDXTests/Fixtures/eds-absorption-truth.json` | 76.8 KB | `tools/edx-sim/absorption_truth_sim.py` |  |
+| `SpectroEDXTests/Fixtures/eds-absorption-truth.json` | 76.7 KB | `tools/edx-sim/absorption_truth_sim.py` |  |
+| `SpectroEDXTests/Fixtures/eds-dead-layer-truth.json` | 76.0 KB | `tools/edx-sim/dead_layer_sim.py` |  |
 | `SpectroEDXTests/Fixtures/eds-fit-exspy-7185a4d1.json` | 155.5 KB | `tools/edx-exspy-pins/fit_pins.py` | rewrites it to the last bit (BLAS order) |
 | `SpectroEDXTests/Fixtures/eds-pins-exspy-7185a4d1.json` | 70.7 KB | `tools/edx-exspy-pins/pins.py` |  |
-| `SpectroEDXTests/Fixtures/eds-proposer-sim.json` | 100.3 KB | `tools/edx-sim/proposer_sim.py` |  |
+| `SpectroEDXTests/Fixtures/eds-proposer-sim.json` | 100.4 KB | `tools/edx-sim/proposer_sim.py` |  |
 | `SpectroEDXTests/Fixtures/eds-quant-pins-exspy-7185a4d1.json` | 30.6 KB | `tools/edx-exspy-pins/quant_pins.py` |  |
 | `SpectroEDXTests/Fixtures/eds-realistic-l-sim.json` | 39.0 KB | `tools/edx-sim/realistic_l_sim.py` |  |
 | `SpectroEDXTests/Fixtures/eds-unlisted-sim.json` | 31.0 KB | `tools/edx-sim/unlisted_sim.py` |  |
-| `SpectroEDXTests/Fixtures/eds-weakline-sim.json` | 378.2 KB | `tools/edx-sim/weakline_sim.py` |  |
+| `SpectroEDXTests/Fixtures/eds-weakline-sim.json` | 378.0 KB | `tools/edx-sim/weakline_sim.py` |  |
 | `SpectroEDXTests/Fixtures/edx-0100-exspy.json` | 2.8 KB | `tools/edx-kfactor-import/pins.py` |  |
 | `SpectroEDXTests/Fixtures/edx-axis-e2.f64` | 100.6 KB | `tools/edx-planted/pins.py` |  |
 | `SpectroEDXTests/Fixtures/edx-calibration-counts.u32` | 294.9 KB | `tools/edx-planted/make_planted.py` |  |
 | `SpectroEDXTests/Fixtures/edx-calibration.json` | 95.2 KB | `tools/edx-planted/make_planted.py` |  |
+| `SpectroEDXTests/Fixtures/edx-demo-pools.json` | 187.5 KB | `tools/edx-sim/demo_pools.py` |  |
+| `SpectroEDXTests/Fixtures/edx-matrix.json` | 454.7 KB | `tools/edx-matrix/pins.py` |  |
+| `SpectroEDXTests/Fixtures/edx-matrix.u32` | 2.9 MB | `tools/edx-matrix/pins.py` |  |
 | `SpectroEDXTests/Fixtures/edx-pins-intensity.f64` | 210.2 KB | `tools/edx-planted/pins.py` |  |
 | `SpectroEDXTests/Fixtures/edx-planted-means.f64` | 3.6 MB | `tools/edx-planted/make_planted.py` |  |
 | `SpectroEDXTests/Fixtures/edx-planted-resid.i16` | 8.3 MB | `tools/edx-planted/make_planted.py` |  |
@@ -146,6 +150,7 @@ A moved fixture is its own commit with the reason and a CHANGELOG line.
 | `SpectroEELSTests/Fixtures/eels16-fl-add-zlp.f64` | 153.6 KB | `tools/eels-chain/pins.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-fl-crop.f64` | 150.5 KB | `tools/eels-chain/pins.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-fl-default.f64` | 153.6 KB | `tools/eels-chain/pins.py` |  |
+| `SpectroEELSTests/Fixtures/eels16-fl-noisy.f64` | 153.6 KB | `tools/eels-chain/pins.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-fr-default.f64` | 28.8 KB | `tools/eels-chain/pins.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-fr-fixed-threshold-6.f64` | 28.8 KB | `tools/eels-chain/pins.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-fr-fwhm-1.5.f64` | 28.8 KB | `tools/eels-chain/pins.py` |  |
@@ -164,7 +169,9 @@ A moved fixture is its own commit with the reason and a CHANGELOG line.
 | `SpectroEELSTests/Fixtures/eels16-model-fel-exact-core.f64` | 28.8 KB | `tools/eels-chain/model.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-model-fel-exact-curve.f64` | 28.8 KB | `tools/eels-chain/model.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-model-pins.json` | 13.1 KB | `tools/eels-chain/model.py` |  |
-| `SpectroEELSTests/Fixtures/eels16-pins.json` | 90.3 KB | `tools/eels-chain/pins.py` |  |
+| `SpectroEELSTests/Fixtures/eels16-noisy-ll.f64` | 153.6 KB | `tools/eels-chain/pins.py` |  |
+| `SpectroEELSTests/Fixtures/eels16-noisy-zlp.f64` | 153.6 KB | `tools/eels-chain/pins.py` |  |
+| `SpectroEELSTests/Fixtures/eels16-pins.json` | 91.3 KB | `tools/eels-chain/pins.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-pl-binned-w20-e100-fixneg.f64` | 14.4 KB | `tools/eels-chain/pins.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-pl-binned-w20-e100.f64` | 14.4 KB | `tools/eels-chain/pins.py` |  |
 | `SpectroEELSTests/Fixtures/eels16-pl-binned-w20-e1024.f64` | 58.8 KB | `tools/eels-chain/pins.py` |  |
