@@ -8,6 +8,13 @@ each entry from the merged pull requests' titles; a breaking change's Migration 
 Every quantification and thickness result reports `validation: "none"`: agreement with exSpy and HyperSpy is not validation on a
 sample of known composition.
 
+## [0.18.0](https://github.com/EMSuite/SpectroKit/compare/0.17.3...0.18.0) (2026-11-28)
+
+
+### Features
+
+* exspy's window path for an SEM spectrum: lines in range, windows, intensities and Cliff-Lorimer ([#154](https://github.com/EMSuite/SpectroKit/issues/154)) ([c9795ba](https://github.com/EMSuite/SpectroKit/commit/c9795ba79a60881c01882a5340e71eb4b6ee1b8c))
+
 ## [0.17.3](https://github.com/EMSuite/SpectroKit/compare/0.17.2...0.17.3) (2026-11-27)
 
 
