@@ -1,11 +1,11 @@
 # Test fixtures
 
-One row per committed fixture under `Tests/*/Fixtures/` (311 files): its size and what writes it. Written by
+One row per committed fixture under `Tests/*/Fixtures/` (330 files): its size and what writes it. Written by
 `tools/fixtures/inventory.py`; do not edit by hand. Generators run in the Python reference `tools/reference/setup.sh` builds
 (`References/python`), from the repo root, as each script's header says.
 
 Licence: every fixture is generated from this kit's code and its pinned Python reference and ships under the kit's
-GPL-3.0-only licence, except the 7 rows marked *third party*: keep their licence line when the files move. No
+GPL-3.0-only licence, except the 8 rows marked *third party*: keep their licence line when the files move. No
 fixture holds anyone's measured data; real datasets are read from `$MACEM_DATA` and never copied into the repo.
 
 A moved fixture is its own commit with the reason and a CHANGELOG line.
@@ -64,6 +64,25 @@ A moved fixture is its own commit with the reason and a CHANGELOG line.
 | `SpectroEDXTests/Fixtures/public/SI_empty selection.emd` | 2.0 MB | copied from References/rosettasciio (rsciio/tests/data/emd) | third party: RosettaSciIO public test data (GPL-3.0-or-later, commit 049e7d70), copied unchanged |
 | `SpectroEDXTests/Fixtures/public/Test SI 16x16 215 kx.emd` | 2.0 MB | copied from References/rosettasciio (rsciio/tests/data/emd) | third party: RosettaSciIO public test data (GPL-3.0-or-later, commit 049e7d70), copied unchanged |
 | `SpectroEDXTests/Fixtures/public/fei_emd_si.emd` | 955.3 KB | copied from References/rosettasciio (rsciio/tests/data/emd) | third party: RosettaSciIO public test data (GPL-3.0-or-later, commit 049e7d70), copied unchanged |
+| `SpectroEDXTests/Fixtures/sem/fixtures/exspy_EDS_SEM_TM002.hspy` | 31.0 KB | copied byte for byte from Electron Microscopy Studio's tools/parity/sem/fixtures (at e7212f9) | third party: exSpy's demo spectrum `EDS_SEM_TM002` (BAM EDS-TM002, GPL-3.0-or-later), copied unchanged; the input of the two m7 bundles |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-lines-tm002/background_windows_keV.bin` | 0.2 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-lines-tm002/integration_windows_keV.bin` | 0.1 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-lines-tm002/intensity_background_subtracted.bin` | 0.0 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-lines-tm002/intensity_raw.bin` | 0.0 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-lines-tm002/manifest.json` | 2.3 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/atomic_percent_planted.bin` | 0.0 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/atomic_percent_unit.bin` | 0.0 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/background_windows_default_keV.bin` | 0.2 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/db_atomic_weight.bin` | 0.8 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/db_line_energy_keV.bin` | 7.6 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/db_line_weight.bin` | 7.6 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/db_z.bin` | 0.8 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/intensity_background_default.bin` | 0.0 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/intensity_raw_width_2_1.bin` | 0.0 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/line_fwhm_keV.bin` | 0.0 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/manifest.json` | 20.3 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/weight_percent_planted.bin` | 0.0 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
+| `SpectroEDXTests/Fixtures/sem/references/m7/eds-quant-tm002/weight_percent_unit.bin` | 0.0 KB | Electron Microscopy Studio's tools/parity/sem/emit.py (exSpy 0.3.2, HyperSpy 2.5.0), copied byte for byte at e7212f9 | the app's generator stays in the app; equal sha256 to its copy |
 | `SpectroEDXTests/Fixtures/velox-stream-1stream-1frame.emd` | 49.6 KB | `tools/edx-planted/make_velox_streams.py` |  |
 | `SpectroEDXTests/Fixtures/velox-stream-1stream-3frames.emd` | 206.7 KB | `tools/edx-planted/make_velox_streams.py` |  |
 | `SpectroEDXTests/Fixtures/velox-stream-4streams-2frames.emd` | 105.6 KB | `tools/edx-planted/make_velox_streams.py` |  |

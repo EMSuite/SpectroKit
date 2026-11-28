@@ -124,6 +124,13 @@ public nonisolated struct ResolvedWindow: Equatable, Sendable {
         guard let b = background else { return Double(signal) }
         return Double(signal) - Double(left &+ right) * b.scale
     }
+
+    /// The same formula on sums of Double counts (`EDSWindowPath.intensities`): `signal - (left + right) * scale`, the two
+    /// background sums added first as eXSpy adds them. Equal to the integer form on integer counts below 2^53.
+    package func net(_ signal: Double, _ left: Double, _ right: Double) -> Double {
+        guard let b = background else { return signal }
+        return signal - (left + right) * b.scale
+    }
 }
 
 public nonisolated enum WindowIntensityError: Error, Equatable, Sendable {

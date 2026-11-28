@@ -23,7 +23,7 @@ Three products, each a Swift module:
 | Product | What it does |
 |---|---|
 | `SpectroCore` | What EDS and EELS share: the spectrum image (dense and sparse), `EnergyAxis` (HyperSpy's channel rounding), opening a Velox `.emd` or a Gatan `.dm4` EDS spectrum image, linear least-squares and Poisson maximum-likelihood fits (Accelerate LAPACK), counting statistics and sigma propagation. |
-| `SpectroEDX` | The X-ray part: the line table, the EDS line and continuum model and its fit, the element proposer (Currie detection limit), Cliff-Lorimer quantification with computed k-factors, the four-detector absorption correction, export. Depends on `SpectroCore`. |
+| `SpectroEDX` | The X-ray part: the line table, the EDS line and continuum model and its fit, the element proposer (Currie detection limit), Cliff-Lorimer quantification with computed k-factors, the four-detector absorption correction, exSpy's window path for one SEM spectrum (`EDSWindowPath`: lines, windows, intensities, Cliff-Lorimer), export. Depends on `SpectroCore`. |
 | `SpectroEELS` | The thickness t/lambda by the log-ratio method (`EELSThickness.logRatio`); zero-loss alignment; Fourier-log, Fourier-ratio and Richardson-Lucy deconvolution; the edge model fit (joint or per-edge windows, with a 1σ per edge), the MLLS fit and composition in at% and wt%; areal density by the ratio method. Cross sections from the dft generalised oscillator strengths for 383 K, L and M edges of 95 elements. Depends on `SpectroCore`. |
 
 The numerical methods follow exSpy's line by line, with deviations named in the code and compared against exSpy's own

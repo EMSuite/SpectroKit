@@ -113,10 +113,15 @@ let package = Package(
             ]
         ),
         // SpectroEDX: windows, the fit, the proposer, quantification, absorption, energy axis and peak identification on pins (exSpy,
-        // HyperSpy, RosettaSciIO) and planted truth (Fixtures/).
+        // HyperSpy, RosettaSciIO) and planted truth (Fixtures/); exspy's window path on the app's SEM bundles (Fixtures/sem, whose
+        // hspy input FormatoHDF5 reads).
         .testTarget(
             name: "SpectroEDXTests",
-            dependencies: ["SpectroEDX", "SpectroCore", "SpectroTestSupport", .product(name: "FormatoEMD", package: "FormatoKit")],
+            dependencies: [
+                "SpectroEDX", "SpectroCore", "SpectroTestSupport",
+                .product(name: "FormatoCore", package: "FormatoKit"), .product(name: "FormatoEMD", package: "FormatoKit"),
+                .product(name: "FormatoHDF5", package: "FormatoKit"),
+            ],
             exclude: ["Fixtures"],
             swiftSettings: [
                 .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
